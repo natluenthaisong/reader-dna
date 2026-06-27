@@ -11,6 +11,13 @@ export const metadata: Metadata = {
   metadataBase: new URL(getBaseUrl()),
   title: "Reader DNA: คุณเป็นนักอ่านแบบไหน?",
   description: "แบบทดสอบ 24 ข้อ ที่จะบอกว่าคุณเป็นนักอ่านสายไหน — พร้อมแฉนิสัยการอ่านแบบเจ็บนิด ๆ แต่จริง",
+  openGraph: {
+    images: ['/api/og'],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    images: ['/api/og'],
+  }
 };
 
 export default function RootLayout({
