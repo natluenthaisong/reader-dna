@@ -65,7 +65,7 @@ const getAudioCtx = () => {
 
 export default function QuizPage() {
   const router = useRouter();
-  const { answers, currentQuestionIndex, setAnswer, nextQuestion, prevQuestion, setResult } = useQuizStore();
+  const { answers, currentQuestionIndex, setAnswer, nextQuestion, prevQuestion, jumpToQuestion, setResult } = useQuizStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
@@ -317,20 +317,24 @@ export default function QuizPage() {
       {/* Progress Header */}
       <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', marginBottom: 'clamp(1rem, 3vh, 2rem)' }}>
         <button 
-          onMouseEnter={() => { if (!isTransitioning && currentQuestionIndex !== 0) playClickSound(-1, true); }}
+          onMouseEnter={() => { if (!isTransitioning) playClickSound(-1, true); }}
           onClick={() => {
             if (!isTransitioning) {
               playClickSound(-1);
-              prevQuestion();
+              if (currentQuestionIndex === 0) {
+                router.push('/');
+              } else {
+                prevQuestion();
+              }
             }
           }} 
-          disabled={currentQuestionIndex === 0 || isTransitioning}
-          className={currentQuestionIndex === 0 ? "" : "hover-glitch"}
+          disabled={isTransitioning}
+          className="hover-glitch"
           style={{ 
             background: 'none', border: 'none', 
-            color: currentQuestionIndex === 0 ? '#444' : 'var(--text-light)', 
-            cursor: currentQuestionIndex === 0 ? 'default' : 'pointer', 
-            filter: currentQuestionIndex === 0 ? 'none' : 'drop-shadow(3px 3px 0 var(--accent-red)) drop-shadow(6px 6px 0 var(--accent-cyan))',
+            color: 'var(--text-light)', 
+            cursor: isTransitioning ? 'default' : 'pointer', 
+            filter: 'drop-shadow(3px 3px 0 var(--accent-red)) drop-shadow(6px 6px 0 var(--accent-cyan))',
             padding: '10px'
           }}
           aria-label="Back"
@@ -340,6 +344,43 @@ export default function QuizPage() {
             <path d="M 0 12 L 18 0 L 14 8 L 40 4 L 38 18 L 14 14 L 18 24 Z" />
           </svg>
         </button>
+
+        {/* Breadcrumbs */}
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginLeft: 'auto', marginRight: '10px', maxWidth: '70%', justifyContent: 'flex-end', alignItems: 'center' }}>
+          {questions.map((_, idx) => {
+            const isPast = idx < currentQuestionIndex;
+            const isCurrent = idx === currentQuestionIndex;
+            const canClick = isPast && !isTransitioning;
+            
+            return (
+              <button
+                key={idx}
+                onClick={() => {
+                  if (canClick) {
+                    playClickSound(-1);
+                    jumpToQuestion(idx);
+                  }
+                }}
+                disabled={!canClick}
+                title={canClick ? `กลับไปข้อ ${idx + 1}` : undefined}
+                className={canClick ? "hover-glitch" : ""}
+                style={{
+                  width: isCurrent ? '18px' : '12px',
+                  height: isCurrent ? '18px' : '12px',
+                  backgroundColor: isCurrent ? 'var(--accent-yellow)' : isPast ? 'var(--accent-cyan)' : 'var(--accent-black)',
+                  border: '2px solid var(--accent-white)',
+                  cursor: canClick ? 'pointer' : 'default',
+                  opacity: (isPast || isCurrent) ? 1 : 0.4,
+                  transition: 'all 0.2s ease',
+                  transform: isCurrent ? 'skewX(-10deg) rotate(5deg)' : 'skewX(-10deg)',
+                  boxShadow: isCurrent ? '3px 3px 0 var(--accent-red)' : 'none',
+                  padding: 0
+                }}
+                aria-label={`Jump to question ${idx + 1}`}
+              />
+            );
+          })}
+        </div>
       </div>
 
       {/* Jagged Progress Bar (Like torn tape) */}
