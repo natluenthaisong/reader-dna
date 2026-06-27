@@ -97,32 +97,62 @@ export const playSynthBlip = (freq: number = 400) => {
         
         const gain = ctx.createGain();
         gain.gain.setValueAtTime(0, ctx.currentTime);
-        gain.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 0.02); // Louder (0.3)
-        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2); // Longer (0.2s)
+        gain.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
         
         osc.connect(gain);
         gain.connect(ctx.destination);
         
         osc.start();
         osc.stop(ctx.currentTime + 0.25);
-        console.log(`[playSynthBlip] Played freq ${freq} at ${ctx.currentTime}`);
-      } catch (err) {
-        console.error('[playSynthBlip] Error during play:', err);
-      }
+      } catch (err) {}
     };
 
     if (ctx.state === 'suspended') {
-      console.log('[playSynthBlip] Context suspended, resuming...');
-      ctx.resume().then(() => {
-        console.log('[playSynthBlip] Resumed successfully!');
-        play();
-      }).catch((err) => {
-        console.error('[playSynthBlip] Resume failed:', err);
-      });
+      ctx.resume().then(play).catch(() => {});
     } else {
       play();
     }
-  } catch (e) {
-    console.error('[playSynthBlip] Fatal error:', e);
-  }
+  } catch (e) {}
+};
+
+// Fast scribbling sound for the highlight animation
+export const playScribbleSound = () => {
+  try {
+    const ctx = getAudioCtx();
+    if (!ctx) return;
+    
+    const play = () => {
+      try {
+        const osc = ctx.createOscillator();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(800, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(2000, ctx.currentTime + 0.1);
+        osc.frequency.exponentialRampToValueAtTime(400, ctx.currentTime + 0.3);
+        
+        const gain = ctx.createGain();
+        gain.gain.setValueAtTime(0, ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.2, ctx.currentTime + 0.05);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+        
+        // Add some noise/distortion
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'highpass';
+        filter.frequency.value = 1000;
+        
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(ctx.destination);
+        
+        osc.start();
+        osc.stop(ctx.currentTime + 0.3);
+      } catch (err) {}
+    };
+
+    if (ctx.state === 'suspended') {
+      ctx.resume().then(play).catch(() => {});
+    } else {
+      play();
+    }
+  } catch (e) {}
 };

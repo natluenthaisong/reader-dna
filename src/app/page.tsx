@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect } from 'react';
-import { getAudioCtx, playSynthBlip } from '@/utils/audio';
+import { getAudioCtx, playSynthBlip, playScribbleSound } from '@/utils/audio';
 
 export default function Home() {
 
@@ -83,12 +83,12 @@ export default function Home() {
           <span onMouseEnter={() => playSynthBlip(400)} className="ransom-word halftone-yellow" style={{ fontSize: 'clamp(4rem, 15vw, 7rem)', transform: 'rotate(-2deg)', cursor: 'crosshair' }}>A</span>
         </div>
         
-        <div style={{ position: 'relative', display: 'inline-block' }}>
+        <div className="highlight-container" onMouseEnter={() => playScribbleSound()} style={{ position: 'relative', display: 'inline-block', cursor: 'crosshair' }}>
           {/* Highlight Scribble */}
           <svg style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%) rotate(-1deg)', width: '110%', height: '120%', zIndex: -1, opacity: 0.8 }} viewBox="0 0 200 60" preserveAspectRatio="none" fill="none" stroke="var(--accent-yellow)" strokeWidth="12" strokeLinecap="round" strokeLinejoin="miter">
-            <path d="M 10 30 Q 50 10 100 40 T 190 20 M 15 45 Q 80 20 180 45" />
+            <path className="highlight-path" d="M 10 30 Q 50 10 100 40 T 190 20 M 15 45 Q 80 20 180 45" />
           </svg>
-          <h2 onMouseEnter={() => playSynthBlip(1000)} style={{ fontSize: 'clamp(1.25rem, 4vw, 2rem)', color: 'var(--accent-black)', background: 'var(--accent-white)', display: 'inline-block', padding: '8px 16px', clipPath: 'polygon(2% 1%, 98% 3%, 99% 98%, 1% 97%)', marginTop: '12px', border: '3px solid var(--accent-black)', transform: 'rotate(2deg)', boxShadow: '5px 5px 0 var(--accent-red)', cursor: 'crosshair' }}>
+          <h2 style={{ fontSize: 'clamp(1.25rem, 4vw, 2rem)', color: 'var(--accent-black)', background: 'var(--accent-white)', display: 'inline-block', padding: '8px 16px', clipPath: 'polygon(2% 1%, 98% 3%, 99% 98%, 1% 97%)', marginTop: '12px', border: '3px solid var(--accent-black)', transform: 'rotate(2deg)', boxShadow: '5px 5px 0 var(--accent-red)' }}>
             คุณเป็นนักอ่านแบบไหน?
           </h2>
         </div>
