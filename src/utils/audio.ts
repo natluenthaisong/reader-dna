@@ -84,7 +84,10 @@ export const playPunkJingle = (pitchMultiplier: number = 1) => {
 export const playSynthBlip = (freq: number = 400) => {
   try {
     const ctx = getAudioCtx();
-    if (!ctx) return;
+    if (!ctx) {
+      console.warn('AudioContext not found');
+      return;
+    }
     
     const play = () => {
       try {
@@ -102,13 +105,24 @@ export const playSynthBlip = (freq: number = 400) => {
         
         osc.start();
         osc.stop(ctx.currentTime + 0.25);
-      } catch (err) {}
+        console.log(`[playSynthBlip] Played freq ${freq} at ${ctx.currentTime}`);
+      } catch (err) {
+        console.error('[playSynthBlip] Error during play:', err);
+      }
     };
 
     if (ctx.state === 'suspended') {
-      ctx.resume().then(play).catch(() => {});
+      console.log('[playSynthBlip] Context suspended, resuming...');
+      ctx.resume().then(() => {
+        console.log('[playSynthBlip] Resumed successfully!');
+        play();
+      }).catch((err) => {
+        console.error('[playSynthBlip] Resume failed:', err);
+      });
     } else {
       play();
     }
-  } catch (e) {}
+  } catch (e) {
+    console.error('[playSynthBlip] Fatal error:', e);
+  }
 };
