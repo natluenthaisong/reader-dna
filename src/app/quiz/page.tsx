@@ -443,11 +443,14 @@ export default function QuizPage() {
         const currentAnswers = useQuizStore.getState().answers;
         const finalAnswers = { ...currentAnswers, [currentQuestion.id]: value };
         
-        const response = await fetch('/api/score', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ answers: finalAnswers })
-        });
+        const [response] = await Promise.all([
+          fetch('/api/score', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ answers: finalAnswers })
+          }),
+          new Promise(resolve => setTimeout(resolve, 2500)) // Wait for Ransom Note animation to finish
+        ]);
         
         const data = await response.json();
         if (data.archetypeId) {
