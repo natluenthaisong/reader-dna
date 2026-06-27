@@ -121,25 +121,52 @@ export default function QuizPage() {
   const playClickSound = (pitchIndex = 0, isHover = false) => {
     try {
       const ctx = getAudioCtx();
-      if (!ctx) return;
+      if (!ctx || ctx.state === 'suspended') return;
       
+      if (isHover) {
+        // Retro Video Game "Blip-Bleep" for Hover
+        // Map the button index to a musical scale so hovering down the list plays a melody!
+        // E4, G4, A4, C5, D5 (E minor pentatonic)
+        const scale = [329.63, 392.00, 440.00, 523.25, 587.33]; 
+        // If it's the back button (pitchIndex = -1), use a lower note (E3 = 164.81)
+        const freq = pitchIndex === -1 ? 164.81 : (scale[pitchIndex % scale.length] || 440);
+        
+        const osc = ctx.createOscillator();
+        osc.type = 'square'; // Classic retro sound
+        
+        // Quick 2-note arpeggio (Root -> Octave)
+        osc.frequency.setValueAtTime(freq, ctx.currentTime);
+        osc.frequency.setValueAtTime(freq * 2, ctx.currentTime + 0.04); // Jump up an octave after 40ms
+        
+        const hoverGain = ctx.createGain();
+        hoverGain.gain.setValueAtTime(0.02, ctx.currentTime); // Keep it relatively quiet
+        hoverGain.gain.setValueAtTime(0.02, ctx.currentTime + 0.04);
+        hoverGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08); // Fade out quickly
+        
+        osc.connect(hoverGain);
+        hoverGain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.08);
+        return; // Exit early, don't play the heavy click sound
+      }
+
+      // CLICK SOUND:
       // E2, G2, A2, C3, D3 (Classic punk progression)
       const baseFreqs = [82.41, 98.00, 110.00, 130.81, 146.83];
       // Back button gets a heavy low E1
       const root = pitchIndex === -1 ? 41.20 : (baseFreqs[pitchIndex % baseFreqs.length] || 82.41);
       
-      // For hover, pitch it up an octave and make it much quieter/shorter
-      const multiplier = isHover ? 2 : 1;
+      const multiplier = 1;
       
       // Aggressive distorted synth punk chord (Root + 5th + Octave)
       const freqs = [root * multiplier, root * 1.498 * multiplier, root * 2 * multiplier];
       const masterGain = ctx.createGain();
-      masterGain.gain.value = isHover ? 0.03 : 0.3; // Much quieter for hover
+      masterGain.gain.value = 0.3;
       
       // Heavy Distortion curve (Fuzz)
       const waveShaper = ctx.createWaveShaper();
       const curve = new Float32Array(44100);
-      const amount = isHover ? 20 : 50; 
+      const amount = 50; 
       for (let i = 0; i < 44100; ++i) {
         let x = i * 2 / 44100 - 1;
         curve[i] = (3 + amount) * x * 20 * (Math.PI / 180) / (Math.PI + amount * Math.abs(x));
@@ -149,13 +176,13 @@ export default function QuizPage() {
       // Filter for crunch
       const filter = ctx.createBiquadFilter();
       filter.type = 'bandpass';
-      filter.frequency.setValueAtTime(isHover ? 1500 : 800, ctx.currentTime);
+      filter.frequency.setValueAtTime(800, ctx.currentTime);
       filter.Q.value = 1.0;
       
       // Envelope (Fast attack, short decay for a "chug")
       const envGain = ctx.createGain();
       envGain.gain.setValueAtTime(1, ctx.currentTime);
-      envGain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + (isHover ? 0.05 : 0.2));
+      envGain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
       
       // Route audio
       envGain.connect(waveShaper);
@@ -171,11 +198,11 @@ export default function QuizPage() {
         osc.detune.value = (Math.random() - 0.5) * 15; // Detune for thickness
         osc.connect(envGain);
         osc.start();
-        osc.stop(ctx.currentTime + (isHover ? 0.1 : 0.25));
+        osc.stop(ctx.currentTime + 0.25);
       });
       
       // Add noise burst for pick attack
-      const bufferSize = ctx.sampleRate * 0.05; 
+      const bufferSize = ctx.sampleRate * 0.05;  
       const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
       const data = buffer.getChannelData(0);
       for (let i = 0; i < bufferSize; i++) {
@@ -184,7 +211,7 @@ export default function QuizPage() {
       const noise = ctx.createBufferSource();
       noise.buffer = buffer;
       const noiseGain = ctx.createGain();
-      noiseGain.gain.setValueAtTime(isHover ? 0.2 : 0.8, ctx.currentTime);
+      noiseGain.gain.setValueAtTime(0.8, ctx.currentTime);
       noiseGain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.05);
       noise.connect(noiseGain);
       noiseGain.connect(waveShaper); // Run pick attack through distortion too!
