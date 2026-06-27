@@ -489,6 +489,16 @@ export default function QuizPage() {
           transition: 'all 0.6s cubic-bezier(0.68, -0.6, 0.32, 1.6)' // Spring damping effect!
         }}
       >
+        {/* Punk Portrait Cutout (Dynamically loaded based on question) */}
+        <div className="punk-portrait-wrapper" style={{ transform: `translateY(-50%) rotate(${currentQuestionIndex % 2 === 0 ? '3deg' : '-3deg'})` }}>
+          <img 
+            src={`/authors/${currentQuestionIndex + 1}.jpg`} 
+            alt="" 
+            onError={(e) => { e.currentTarget.style.display = 'none'; }}
+            onLoad={(e) => { e.currentTarget.style.display = 'block'; }}
+          />
+        </div>
+
         {/* Absolute Background Panel that gets clipped */}
         <div 
           className="p5-panel"
@@ -500,17 +510,7 @@ export default function QuizPage() {
             transition: 'clip-path 0.6s cubic-bezier(0.68, -0.6, 0.32, 1.6)',
             overflow: 'hidden' // Ensure contents don't break out
           }}
-        >
-          {/* Punk Portrait Cutout (Dynamically loaded based on question) */}
-          <div className="punk-portrait-wrapper" style={{ transform: currentQuestionIndex % 2 === 0 ? 'rotate(3deg)' : 'rotate(-3deg)' }}>
-            <img 
-              src={`/authors/${currentQuestionIndex + 1}.jpg`} 
-              alt="" 
-              onError={(e) => { e.currentTarget.style.display = 'none'; }}
-              onLoad={(e) => { e.currentTarget.style.display = 'block'; }}
-            />
-          </div>
-        </div>
+        />
         
             <h2 className="halftone-yellow" style={{ fontSize: 'clamp(1.25rem, 4.5vw, 2rem)', fontWeight: '900', marginBottom: 'clamp(1rem, 2vh, 1.5rem)', minHeight: 'clamp(40px, 10vh, 80px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '10px', border: '3px solid black', boxShadow: '4px 4px 0 var(--accent-red)', transform: 'rotate(-1deg)', lineHeight: 1.5 }}>
               <TypewriterText text={currentQuestion.text} id={currentQuestion.id} />
