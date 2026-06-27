@@ -143,15 +143,18 @@ export default function ResultClient({ archetype }: { archetype: any }) {
             <div style={{ flex: '1 1 35%', display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'flex-end', marginTop: '24px', background: 'rgba(255,255,255,0.95)', border: '3px solid black', padding: '16px', transform: 'rotate(-1deg)', boxShadow: '6px 6px 0 var(--accent-black)', position: 'relative' }}>
               <div className="tape" style={{ top: '-12px', right: '8px', width: '64px', height: '20px', transform: 'rotate(15deg)' }}></div>
               {highlights && highlights.slice(0, 3).map((h: any, i: number) => (
-                <div key={h.key} style={{ display: 'flex', alignItems: 'center', width: '100%', maxWidth: '320px', justifyContent: 'space-between', gap: '12px' }}>
+                <div key={h.key} style={{ display: 'flex', alignItems: 'center', width: '100%', maxWidth: '360px', justifyContent: 'flex-end', gap: '12px' }}>
                   <span style={{ fontSize: '15px', fontWeight: '900', textTransform: 'uppercase', color: 'var(--accent-black)', lineHeight: 1.2, textAlign: 'right', flex: 1 }}>{h.label}</span>
-                  <div style={{ width: '120px', height: '22px', background: 'var(--accent-white)', border: '2px solid var(--accent-black)', position: 'relative', flexShrink: 0 }}>
-                    <div className={i % 3 === 0 ? "leopard-red" : ""} style={{ 
-                      position: 'absolute', top: 0, left: 0,
-                      width: `${h.value}%`, height: '100%', 
-                      background: i % 3 === 0 ? 'var(--accent-red)' : ['var(--accent-red)', 'var(--accent-cyan)', 'var(--accent-yellow)'][i % 3],
-                      borderRight: '2px solid black'
-                    }} />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <div style={{ width: '120px', height: '22px', background: 'var(--accent-white)', border: '2px solid var(--accent-black)', position: 'relative', flexShrink: 0 }}>
+                      <div className={i % 3 === 0 ? "leopard-red" : ""} style={{ 
+                        position: 'absolute', top: 0, left: 0,
+                        width: `${h.value}%`, height: '100%', 
+                        background: i % 3 === 0 ? 'var(--accent-red)' : ['var(--accent-red)', 'var(--accent-cyan)', 'var(--accent-yellow)'][i % 3],
+                        borderRight: '2px solid black'
+                      }} />
+                    </div>
+                    <span style={{ fontSize: '15px', fontWeight: '900', color: 'var(--accent-black)', width: '35px', textAlign: 'left', fontStyle: 'italic' }}>{h.value}%</span>
                   </div>
                 </div>
               ))}
