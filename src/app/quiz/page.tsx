@@ -88,6 +88,35 @@ const TypewriterText = ({ text, id }: { text: string, id: string }) => {
   );
 };
 
+const InteractiveSticker = ({ sticker }: { sticker: any }) => {
+  const [isRepelled, setIsRepelled] = useState(false);
+  
+  return (
+    <div
+      onMouseEnter={() => setIsRepelled(true)}
+      onMouseLeave={() => setIsRepelled(false)}
+      style={{
+        position: 'absolute',
+        top: `${sticker.top}%`,
+        left: `${sticker.left}%`,
+        transform: `rotate(${sticker.rotation}deg) ${isRepelled ? 'translate(-40px, -30px) scale(0.9)' : 'translate(0px, 0px)'}`,
+        transition: 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+        pointerEvents: 'auto',
+        cursor: 'grab'
+      }}
+    >
+      <svg 
+        viewBox="0 0 24 24" 
+        width={sticker.size} 
+        height={sticker.size} 
+        style={{ filter: 'drop-shadow(3px 3px 0 var(--accent-black))' }}
+      >
+        {sticker.path}
+      </svg>
+    </div>
+  );
+};
+
 const StickerDecorations = ({ questionIndex }: { questionIndex: number }) => {
   const stickers = [
     { id: 'lightning', path: <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="black" strokeWidth="1.5" fill="var(--accent-yellow)" strokeLinejoin="round" /> },
@@ -104,14 +133,20 @@ const StickerDecorations = ({ questionIndex }: { questionIndex: number }) => {
   };
 
   const count = getRand(questionIndex * 10, 2, 4);
+  const sizeMap = [40, 70, 110, 160]; // S, M, L, XL
   const selectedStickers = [];
   
   for (let i = 0; i < count; i++) {
     const stickerIdx = getRand(questionIndex * 20 + i, 0, stickers.length - 1);
     const top = getRand(questionIndex * 30 + i, 15, 80);
-    // Keep mostly on the left side (0-20%)
-    const left = getRand(questionIndex * 40 + i, -5, 20); 
-    const size = getRand(questionIndex * 50 + i, 45, 80);
+    // Determine size index (0=S, 1=M, 2=L, 3=XL)
+    const sizeIdx = getRand(questionIndex * 50 + i, 0, 3);
+    const size = sizeMap[sizeIdx];
+    
+    // Keep mostly on the left side, push larger icons further left so they don't overlap center
+    let left = getRand(questionIndex * 40 + i, -5, 15); 
+    if (sizeIdx >= 2) left -= 15; // Push L and XL further left
+    
     const rotation = getRand(questionIndex * 60 + i, -45, 45);
     selectedStickers.push({ ...stickers[stickerIdx], top, left, size, rotation, key: i });
   }
@@ -119,22 +154,7 @@ const StickerDecorations = ({ questionIndex }: { questionIndex: number }) => {
   return (
     <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 50 }}>
       {selectedStickers.map(s => (
-        <svg 
-          key={s.key} 
-          viewBox="0 0 24 24" 
-          width={s.size} 
-          height={s.size} 
-          style={{ 
-            position: 'absolute', 
-            top: `${s.top}%`, 
-            left: `${s.left}%`, 
-            transform: `rotate(${s.rotation}deg)`,
-            filter: 'drop-shadow(3px 3px 0 var(--accent-black))',
-            transition: 'all 0.6s cubic-bezier(0.68, -0.6, 0.32, 1.6)'
-          }}
-        >
-          {s.path}
-        </svg>
+        <InteractiveSticker key={s.key} sticker={s} />
       ))}
     </div>
   );
