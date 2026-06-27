@@ -510,6 +510,7 @@ export default function QuizPage() {
             const isSelected = answers[currentQuestion.id] === option.value;
             
             // Collage cutout styling for the options
+            const rIdx = (idx + currentQuestionIndex) % 5;
             const rotations = ['rotate(-2deg)', 'rotate(3deg)', 'rotate(-1deg)', 'rotate(4deg)', 'rotate(-3deg)'];
             const bgColors = ['var(--accent-white)', 'var(--accent-yellow)', 'var(--accent-cyan)', 'var(--accent-white)', 'var(--accent-red)'];
             const textColors = ['var(--accent-black)', 'var(--accent-black)', 'var(--accent-black)', 'var(--accent-black)', 'var(--accent-white)'];
@@ -534,7 +535,7 @@ export default function QuizPage() {
                 key={`${currentQuestion.id}-${option.value}`}
                 style={{
                   width: '90%',
-                  marginLeft: margins[idx],
+                  marginLeft: margins[rIdx],
                   animation: `p5SnapIn 0.3s ${idx * 0.05}s both cubic-bezier(0.1, 0.9, 0.2, 1)`,
                   filter: isSelected ? 'drop-shadow(6px 6px 0 var(--accent-black))' : 'drop-shadow(4px 4px 0 var(--accent-black))',
                   opacity: isTransitioning && !isSelected ? 0.3 : 1,
@@ -544,21 +545,21 @@ export default function QuizPage() {
                 }}
               >
                 <button
-                  className={`p5-button ${isSelected ? "" : "hover-bounce"} ${!isSelected && bgColors[idx] === 'var(--accent-yellow)' ? 'halftone-yellow' : ''} ${!isSelected && bgColors[idx] === 'var(--accent-red)' ? 'leopard-red' : ''}`}
+                  className={`p5-button ${isSelected ? "animate-press-pop" : "hover-bounce"} ${!isSelected && bgColors[rIdx] === 'var(--accent-yellow)' ? 'halftone-yellow' : ''} ${!isSelected && bgColors[rIdx] === 'var(--accent-red)' ? 'leopard-red' : ''}`}
                   onMouseEnter={() => { if (!isTransitioning && !isSelected) playClickSound(idx, true); }}
                   onClick={() => handleSelect(option.value, idx)}
                   disabled={isTransitioning}
                   style={{ 
-                    '--base-rotate': isSelected ? 'rotate(0deg)' : rotations[idx],
-                    '--base-scale': isSelected ? 1.1 : 1,
-                    '--hover-scale': isSelected ? 1.15 : 1.05,
-                    transform: `scale(var(--base-scale)) var(--base-rotate)`,
+                    '--base-rotate': rotations[rIdx],
+                    '--base-scale': 1,
+                    '--hover-scale': 1.05,
+                    transform: isSelected ? undefined : `scale(var(--base-scale)) var(--base-rotate)`,
                     width: '100%', 
-                    background: isSelected ? 'var(--accent-black)' : bgColors[idx],
-                    color: isSelected ? 'var(--accent-green)' : textColors[idx],
-                    textShadow: (isSelected || textColors[idx] === 'var(--accent-white)') ? '2px 2px 0 var(--accent-black)' : '2px 2px 0 var(--accent-white)',
+                    background: isSelected ? 'var(--accent-black)' : bgColors[rIdx],
+                    color: isSelected ? 'var(--accent-green)' : textColors[rIdx],
+                    textShadow: (isSelected || textColors[rIdx] === 'var(--accent-white)') ? '2px 2px 0 var(--accent-black)' : '2px 2px 0 var(--accent-white)',
                     border: 'none',
-                    clipPath: clipPaths[idx],
+                    clipPath: clipPaths[rIdx],
                     padding: '16px 24px',
                     cursor: isTransitioning ? 'default' : 'pointer',
                     display: 'flex',
@@ -575,7 +576,7 @@ export default function QuizPage() {
                     style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', zIndex: 0, pointerEvents: 'none' }}
                   >
                     <polygon 
-                      points={svgPoints[idx]} 
+                      points={svgPoints[rIdx]} 
                       fill="none" 
                       stroke="var(--accent-black)" 
                       strokeWidth="6" 
