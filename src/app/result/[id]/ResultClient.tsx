@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useQuizStore } from '@/store/useQuizStore';
+import { playPunkJingle } from '@/utils/audio';
 
 export default function ResultClient({ archetype }: { archetype: any }) {
   const router = useRouter();
@@ -11,6 +12,7 @@ export default function ResultClient({ archetype }: { archetype: any }) {
   const [mounted, setMounted] = useState(false);
   const [isCapturing, setIsCapturing] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
+  const [isHoveringRansom, setIsHoveringRansom] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const resultRef = useRef<HTMLDivElement>(null);
 
@@ -112,8 +114,17 @@ export default function ResultClient({ archetype }: { archetype: any }) {
               
               <div className="p5-text-bg-black" style={{ fontSize: '14px', transform: 'rotate(-3deg)' }}>CONFIDENTIAL FILE</div>
               
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginTop: '12px' }}>
-                {archetype.english_name.toUpperCase().split('').map((char: string, i: number) => {
+              <div 
+                style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginTop: '12px', cursor: 'pointer', minHeight: '60px' }}
+                onMouseEnter={() => {
+                  if (!isHoveringRansom) {
+                    playPunkJingle();
+                    setIsHoveringRansom(true);
+                  }
+                }}
+                onMouseLeave={() => setIsHoveringRansom(false)}
+              >
+                {(isHoveringRansom ? "SUNDAY BOOK CLUB" : archetype.english_name.toUpperCase()).split('').map((char: string, i: number) => {
                   if (char === ' ') return <div key={i} style={{ width: '20px' }} />;
                   return (
                     <span key={i} className={`ransom-word ${i % 4 === 0 ? 'halftone-yellow' : ''}`} style={{ 
