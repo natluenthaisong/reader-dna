@@ -18,6 +18,10 @@ export async function GET(request: Request) {
       return new Response('Archetype not found', { status: 404 });
     }
 
+    const fontData = await fetch(
+      'https://github.com/google/fonts/raw/main/ofl/kanit/Kanit-Regular.ttf'
+    ).then((res) => res.arrayBuffer());
+
     return new ImageResponse(
       (
         <div
@@ -30,7 +34,7 @@ export async function GET(request: Request) {
             justifyContent: 'center',
             backgroundColor: '#0F172A',
             color: '#F8FAFC',
-            fontFamily: '"Kanit", sans-serif',
+            fontFamily: '"Kanit"',
             padding: '40px',
             textAlign: 'center',
           }}
@@ -48,13 +52,20 @@ export async function GET(request: Request) {
             {archetype.share_card.punchline}
           </p>
           <div style={{ marginTop: '50px', fontSize: '24px', color: '#94A3B8', padding: '12px 24px', border: '2px solid #8B5CF6', borderRadius: '16px' }}>
-            {archetype.share_card.cta}
+            เล่นแบบทดสอบเลยที่ sunday-book.club
           </div>
         </div>
       ),
       {
         width: 1200,
         height: 630,
+        fonts: [
+          {
+            name: 'Kanit',
+            data: fontData,
+            style: 'normal',
+          },
+        ],
       }
     );
   } catch (e: any) {

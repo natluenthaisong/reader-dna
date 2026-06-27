@@ -53,6 +53,10 @@ export default function ResultClient({ archetype }: { archetype: any }) {
         await new Promise(resolve => setTimeout(resolve, 150));
         const { toPng } = await import('html-to-image');
         
+        // iOS Safari workaround: run it once to cache fonts/images, then again for the real output
+        await toPng(resultRef.current, { pixelRatio: 1 });
+        await new Promise(resolve => setTimeout(resolve, 50));
+        
         const dataUrl = await toPng(resultRef.current, { 
           pixelRatio: 2,
         });
@@ -118,7 +122,8 @@ export default function ResultClient({ archetype }: { archetype: any }) {
                 style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginTop: '12px', cursor: 'pointer', minHeight: '60px' }}
                 onMouseEnter={() => {
                   if (!isHoveringRansom) {
-                    playPunkJingle();
+                    const randomPitch = 0.8 + Math.random() * 0.7; // Random pitch between 0.8 and 1.5
+                    playPunkJingle(randomPitch);
                     setIsHoveringRansom(true);
                   }
                 }}

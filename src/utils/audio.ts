@@ -9,7 +9,7 @@ export const getAudioCtx = () => {
 };
 
 // Punk Rock Jingle for final question: "Sun-day Book-Club" (Power Chords)
-export const playPunkJingle = () => {
+export const playPunkJingle = (pitchMultiplier: number = 1) => {
   try {
     const ctx = getAudioCtx();
     if (!ctx || ctx.state === 'suspended') return;
@@ -39,10 +39,10 @@ export const playPunkJingle = () => {
     
     // "Sun-day Book-Club" jingle notes (C3, D3, E3, G3)
     const notes = [
-      { freq: 130.81, time: 0, dur: 0.2 },    // Sun
-      { freq: 146.83, time: 0.25, dur: 0.2 },  // day
-      { freq: 164.81, time: 0.5, dur: 0.2 },  // Book
-      { freq: 196.00, time: 0.75, dur: 0.8 }   // Club!
+      { freq: 130.81 * pitchMultiplier, time: 0, dur: 0.2 },    // Sun
+      { freq: 146.83 * pitchMultiplier, time: 0.25, dur: 0.2 },  // day
+      { freq: 164.81 * pitchMultiplier, time: 0.5, dur: 0.2 },  // Book
+      { freq: 196.00 * pitchMultiplier, time: 0.75, dur: 0.8 }   // Club!
     ];
     
     notes.forEach(note => {
