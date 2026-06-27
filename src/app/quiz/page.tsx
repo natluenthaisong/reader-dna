@@ -469,8 +469,19 @@ export default function QuizPage() {
 
   if (isSubmitting || errorMsg) {
     return (
-      <main className="container animate-p5-snap" style={{ alignItems: 'center', textAlign: 'center' }}>
-        <h2 className="p5-title" style={{ fontSize: 'clamp(2rem, 8vw, 4rem)', marginBottom: '1rem', transform: 'skewX(-5deg)' }}>
+      <main className="container animate-p5-snap" style={{ alignItems: 'center', textAlign: 'center', position: 'relative' }}>
+        
+        {/* Flash Ransom Note Overlay */}
+        {isSubmitting && !errorMsg && (
+          <div className="ransom-flash-overlay">
+            <span className="ransom-word word-1" style={{'--base-rotate': '-5deg'} as any}>SUN</span>
+            <span className="ransom-word word-2" style={{'--base-rotate': '8deg'} as any}>DAY</span>
+            <span className="ransom-word word-3" style={{'--base-rotate': '-10deg'} as any}>BOOK</span>
+            <span className="ransom-word word-4" style={{'--base-rotate': '5deg'} as any}>CLUB</span>
+          </div>
+        )}
+
+        <h2 className="p5-title" style={{ fontSize: 'clamp(2rem, 8vw, 4rem)', marginBottom: '1rem', transform: 'skewX(-5deg)', position: 'relative', zIndex: 1 }}>
           {errorMsg ? 'ERROR' : 'PROCESSING...'}
         </h2>
         <div className="p5-text-bg-black" style={{ fontSize: 'clamp(1rem, 4vw, 1.5rem)', marginBottom: '2rem' }}>
