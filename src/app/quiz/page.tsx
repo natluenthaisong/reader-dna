@@ -49,6 +49,30 @@ const playTypewriterSound = () => {
   } catch (e) {}
 };
 
+const playRocketSound = () => {
+  try {
+    const ctx = getAudioCtx();
+    if (!ctx || ctx.state === 'suspended') return;
+    
+    const osc = ctx.createOscillator();
+    osc.type = 'sawtooth'; 
+    
+    // "Phew" frequency sweep down
+    osc.frequency.setValueAtTime(1200, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.8);
+    
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.05, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.0);
+    
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    
+    osc.start();
+    osc.stop(ctx.currentTime + 1.0);
+  } catch (e) {}
+};
+
 const TypewriterText = ({ text, id }: { text: string, id: string }) => {
   const [displayedText, setDisplayedText] = useState('');
   const [isTyping, setIsTyping] = useState(true);
@@ -484,6 +508,7 @@ export default function QuizPage() {
           onClick={() => {
             if (!isTransitioning && !rocketClass) {
               playClickSound(-1);
+              playRocketSound(); // Phew!
               
               const anims = ['rocket-anim-1', 'rocket-anim-2', 'rocket-anim-3'];
               const chosen = anims[Math.floor(Math.random() * anims.length)];
