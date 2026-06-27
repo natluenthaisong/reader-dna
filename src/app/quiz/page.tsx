@@ -169,6 +169,7 @@ export default function QuizPage() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [rocketClass, setRocketClass] = useState<string | null>(null);
   
   // Drag state for Q.n scrubber
   const progressBarRef = useRef<HTMLDivElement>(null);
@@ -479,25 +480,34 @@ export default function QuizPage() {
       {/* Progress Header */}
       <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', marginBottom: 'clamp(1rem, 3vh, 2rem)' }}>
         <button 
-          onMouseEnter={() => { if (!isTransitioning) playClickSound(-1, true); }}
+          onMouseEnter={() => { if (!isTransitioning && !rocketClass) playClickSound(-1, true); }}
           onClick={() => {
-            if (!isTransitioning) {
+            if (!isTransitioning && !rocketClass) {
               playClickSound(-1);
-              if (currentQuestionIndex === 0) {
-                router.push('/');
-              } else {
-                prevQuestion();
-              }
+              
+              const anims = ['rocket-anim-1', 'rocket-anim-2', 'rocket-anim-3'];
+              const chosen = anims[Math.floor(Math.random() * anims.length)];
+              setRocketClass(chosen);
+              
+              setTimeout(() => {
+                if (currentQuestionIndex === 0) {
+                  router.push('/');
+                } else {
+                  prevQuestion();
+                }
+                setRocketClass(null);
+              }, 700);
             }
           }} 
-          disabled={isTransitioning}
-          className="hover-glitch"
+          disabled={isTransitioning || rocketClass !== null}
+          className={`hover-glitch ${rocketClass || ''}`}
           style={{ 
             background: 'none', border: 'none', 
             color: 'var(--text-light)', 
-            cursor: isTransitioning ? 'default' : 'pointer', 
+            cursor: (isTransitioning || rocketClass) ? 'default' : 'pointer', 
             filter: 'drop-shadow(3px 3px 0 var(--accent-red)) drop-shadow(6px 6px 0 var(--accent-cyan))',
-            padding: '10px'
+            padding: '10px',
+            zIndex: rocketClass ? 100 : 1
           }}
           aria-label="Back"
         >
