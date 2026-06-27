@@ -1,0 +1,461 @@
+{
+  "question_version": "1.0.0",
+  "language": "th",
+  "product": "Reader DNA",
+  "scale": [
+    {
+      "value": 1,
+      "label": "เอ่อ...ไม่หนิ"
+    },
+    {
+      "value": 2,
+      "label": "ก็ไม่ค่อยนะ"
+    },
+    {
+      "value": 3,
+      "label": "เฉยๆ"
+    },
+    {
+      "value": 4,
+      "label": "ก็ตรงอยู่นะ"
+    },
+    {
+      "value": 5,
+      "label": "ใช่ นี่แหละแบบนี้เลย!"
+    }
+  ],
+  "questions": [
+    {
+      "id": "q01",
+      "display_id": "Q1",
+      "order": 1,
+      "text": "ฉันมักเลือกหนังสือที่ทำให้ตัวเองเข้าใจโลก เข้าใจงาน หรือเข้าใจชีวิตมากขึ้น",
+      "dimension": "motivation",
+      "public_dimension": "Reading Purpose",
+      "pole": "growth",
+      "measure": "Growth",
+      "weight": 1,
+      "reverse": false,
+      "active": true,
+      "required": true,
+      "ui": {
+        "input_type": "likert_1_5",
+        "mobile_hint": "แตะคะแนนที่ตรงกับคุณที่สุด"
+      }
+    },
+    {
+      "id": "q02",
+      "display_id": "Q2",
+      "order": 2,
+      "text": "เวลาชีวิตวุ่นวาย หนังสือคือพื้นที่ที่ฉันใช้หลบไปพักใจ",
+      "dimension": "motivation",
+      "public_dimension": "Reading Purpose",
+      "pole": "escape",
+      "measure": "Escape",
+      "weight": 1,
+      "reverse": false,
+      "active": true,
+      "required": true,
+      "ui": {
+        "input_type": "likert_1_5",
+        "mobile_hint": "แตะคะแนนที่ตรงกับคุณที่สุด"
+      }
+    },
+    {
+      "id": "q03",
+      "display_id": "Q3",
+      "order": 3,
+      "text": "หลังอ่านหนังสือดี ๆ ฉันมักอยากเอาบางอย่างไปใช้จริง ไม่ทางใดก็ทางหนึ่ง",
+      "dimension": "motivation",
+      "public_dimension": "Reading Purpose",
+      "pole": "growth",
+      "measure": "Growth",
+      "weight": 1,
+      "reverse": false,
+      "active": true,
+      "required": true,
+      "ui": {
+        "input_type": "likert_1_5",
+        "mobile_hint": "แตะคะแนนที่ตรงกับคุณที่สุด"
+      }
+    },
+    {
+      "id": "q04",
+      "display_id": "Q4",
+      "order": 4,
+      "text": "บางครั้งฉันไม่ได้อยากได้บทเรียนจากหนังสือ แค่อยากหายไปอยู่ในอีกโลกหนึ่งสักพัก",
+      "dimension": "motivation",
+      "public_dimension": "Reading Purpose",
+      "pole": "escape",
+      "measure": "Escape",
+      "weight": 1,
+      "reverse": false,
+      "active": true,
+      "required": true,
+      "ui": {
+        "input_type": "likert_1_5",
+        "mobile_hint": "แตะคะแนนที่ตรงกับคุณที่สุด"
+      }
+    },
+    {
+      "id": "q05",
+      "display_id": "Q5",
+      "order": 5,
+      "text": "ฉันชอบลองอ่านหนังสือแนวใหม่ ๆ แม้จะไม่แน่ใจว่าจะชอบหรือไม่",
+      "dimension": "breadth",
+      "public_dimension": "Curiosity Style",
+      "pole": "broad",
+      "measure": "Broad",
+      "weight": 1,
+      "reverse": false,
+      "active": true,
+      "required": true,
+      "ui": {
+        "input_type": "likert_1_5",
+        "mobile_hint": "แตะคะแนนที่ตรงกับคุณที่สุด"
+      }
+    },
+    {
+      "id": "q06",
+      "display_id": "Q6",
+      "order": 6,
+      "text": "ถ้าสนใจเรื่องใดเรื่องหนึ่ง ฉันมักอยากอ่านต่อเนื่องหลายเล่มในหัวข้อนั้น",
+      "dimension": "breadth",
+      "public_dimension": "Curiosity Style",
+      "pole": "deep",
+      "measure": "Deep",
+      "weight": 1,
+      "reverse": false,
+      "active": true,
+      "required": true,
+      "ui": {
+        "input_type": "likert_1_5",
+        "mobile_hint": "แตะคะแนนที่ตรงกับคุณที่สุด"
+      }
+    },
+    {
+      "id": "q07",
+      "display_id": "Q7",
+      "order": 7,
+      "text": "ฉันมักมีหนังสือหลายแนวอยู่ในลิสต์เดียวกัน",
+      "dimension": "breadth",
+      "public_dimension": "Curiosity Style",
+      "pole": "broad",
+      "measure": "Broad",
+      "weight": 1,
+      "reverse": false,
+      "active": true,
+      "required": true,
+      "ui": {
+        "input_type": "likert_1_5",
+        "mobile_hint": "แตะคะแนนที่ตรงกับคุณที่สุด"
+      }
+    },
+    {
+      "id": "q08",
+      "display_id": "Q8",
+      "order": 8,
+      "text": "ฉันชอบกลับไปอ่านผู้เขียน แนว หรือหัวข้อที่คุ้นเคย มากกว่าลองอะไรที่ไม่รู้จักเลย",
+      "dimension": "breadth",
+      "public_dimension": "Curiosity Style",
+      "pole": "deep",
+      "measure": "Deep",
+      "weight": 1,
+      "reverse": false,
+      "active": true,
+      "required": true,
+      "ui": {
+        "input_type": "likert_1_5",
+        "mobile_hint": "แตะคะแนนที่ตรงกับคุณที่สุด"
+      }
+    },
+    {
+      "id": "q09",
+      "display_id": "Q9",
+      "order": 9,
+      "text": "ฉันมักมีแผนคร่าว ๆ ว่าจะอ่านเล่มไหนต่อ",
+      "dimension": "discipline",
+      "public_dimension": "Reading Rhythm",
+      "pole": "structured",
+      "measure": "Structured",
+      "weight": 1,
+      "reverse": false,
+      "active": true,
+      "required": true,
+      "ui": {
+        "input_type": "likert_1_5",
+        "mobile_hint": "แตะคะแนนที่ตรงกับคุณที่สุด"
+      }
+    },
+    {
+      "id": "q10",
+      "display_id": "Q10",
+      "order": 10,
+      "text": "ฉันเลือกหนังสือจากอารมณ์ตอนนั้นมากกว่าจากแผนที่วางไว้",
+      "dimension": "discipline",
+      "public_dimension": "Reading Rhythm",
+      "pole": "mood",
+      "measure": "Mood",
+      "weight": 1,
+      "reverse": false,
+      "active": true,
+      "required": true,
+      "ui": {
+        "input_type": "likert_1_5",
+        "mobile_hint": "แตะคะแนนที่ตรงกับคุณที่สุด"
+      }
+    },
+    {
+      "id": "q11",
+      "display_id": "Q11",
+      "order": 11,
+      "text": "ฉันรู้สึกดีเมื่ออ่านหนังสือจบทีละเล่ม ก่อนเริ่มเล่มใหม่จริงจัง",
+      "dimension": "discipline",
+      "public_dimension": "Reading Rhythm",
+      "pole": "structured",
+      "measure": "Structured",
+      "weight": 1,
+      "reverse": false,
+      "active": true,
+      "required": true,
+      "ui": {
+        "input_type": "likert_1_5",
+        "mobile_hint": "แตะคะแนนที่ตรงกับคุณที่สุด"
+      }
+    },
+    {
+      "id": "q12",
+      "display_id": "Q12",
+      "order": 12,
+      "text": "ฉันสามารถอ่านหลายเล่มพร้อมกันได้ เพราะแต่ละเล่มตอบอารมณ์คนละแบบ",
+      "dimension": "discipline",
+      "public_dimension": "Reading Rhythm",
+      "pole": "mood",
+      "measure": "Mood",
+      "weight": 1,
+      "reverse": false,
+      "active": true,
+      "required": true,
+      "ui": {
+        "input_type": "likert_1_5",
+        "mobile_hint": "แตะคะแนนที่ตรงกับคุณที่สุด"
+      }
+    },
+    {
+      "id": "q13",
+      "display_id": "Q13",
+      "order": 13,
+      "text": "ฉันมักขีดเส้น ไฮไลต์ จดโน้ต หรือเซฟประโยคที่ทำให้คิดต่อ",
+      "dimension": "processing",
+      "public_dimension": "Processing Style",
+      "pole": "reflective",
+      "measure": "Reflective",
+      "weight": 1,
+      "reverse": false,
+      "active": true,
+      "required": true,
+      "ui": {
+        "input_type": "likert_1_5",
+        "mobile_hint": "แตะคะแนนที่ตรงกับคุณที่สุด"
+      }
+    },
+    {
+      "id": "q14",
+      "display_id": "Q14",
+      "order": 14,
+      "text": "ถ้าหนังสือสนุกมาก ฉันไม่อยากหยุดจดหรือวิเคราะห์ แค่อยากอ่านต่อให้ไหลไปเลย",
+      "dimension": "processing",
+      "public_dimension": "Processing Style",
+      "pole": "immersive",
+      "measure": "Immersive",
+      "weight": 1,
+      "reverse": false,
+      "active": true,
+      "required": true,
+      "ui": {
+        "input_type": "likert_1_5",
+        "mobile_hint": "แตะคะแนนที่ตรงกับคุณที่สุด"
+      }
+    },
+    {
+      "id": "q15",
+      "display_id": "Q15",
+      "order": 15,
+      "text": "หลังอ่านจบ ฉันมักคิดต่อว่าหนังสือเล่มนี้เกี่ยวกับชีวิต งาน หรือความเชื่อของฉันอย่างไร",
+      "dimension": "processing",
+      "public_dimension": "Processing Style",
+      "pole": "reflective",
+      "measure": "Reflective",
+      "weight": 1,
+      "reverse": false,
+      "active": true,
+      "required": true,
+      "ui": {
+        "input_type": "likert_1_5",
+        "mobile_hint": "แตะคะแนนที่ตรงกับคุณที่สุด"
+      }
+    },
+    {
+      "id": "q16",
+      "display_id": "Q16",
+      "order": 16,
+      "text": "หนังสือที่ดีสำหรับฉัน คือเล่มที่ทำให้รู้สึกบางอย่างแรง ๆ แม้จะอธิบายเป็นข้อ ๆ ไม่ได้",
+      "dimension": "processing",
+      "public_dimension": "Processing Style",
+      "pole": "immersive",
+      "measure": "Immersive",
+      "weight": 1,
+      "reverse": false,
+      "active": true,
+      "required": true,
+      "ui": {
+        "input_type": "likert_1_5",
+        "mobile_hint": "แตะคะแนนที่ตรงกับคุณที่สุด"
+      }
+    },
+    {
+      "id": "q17",
+      "display_id": "Q17",
+      "order": 17,
+      "text": "ก่อนซื้อหนังสือ ฉันมักดูรีวิว อ่านตัวอย่าง หรือคิดพอสมควรว่าจะอ่านจริงไหม",
+      "dimension": "acquisition",
+      "public_dimension": "Book Relationship",
+      "pole": "selective",
+      "measure": "Selective",
+      "weight": 1,
+      "reverse": false,
+      "active": true,
+      "required": true,
+      "ui": {
+        "input_type": "likert_1_5",
+        "mobile_hint": "แตะคะแนนที่ตรงกับคุณที่สุด"
+      }
+    },
+    {
+      "id": "q18",
+      "display_id": "Q18",
+      "order": 18,
+      "text": "ฉันมีหนังสือที่ซื้อไว้เพราะ “สักวันต้องได้อ่าน” มากกว่าที่อยากยอมรับ",
+      "dimension": "acquisition",
+      "public_dimension": "Book Relationship",
+      "pole": "collector",
+      "measure": "Collector",
+      "weight": 1,
+      "reverse": false,
+      "active": true,
+      "required": true,
+      "ui": {
+        "input_type": "likert_1_5",
+        "mobile_hint": "แตะคะแนนที่ตรงกับคุณที่สุด"
+      }
+    },
+    {
+      "id": "q19",
+      "display_id": "Q19",
+      "order": 19,
+      "text": "ฉันค่อนข้างระวังไม่ให้ซื้อหนังสือเกินกว่าที่ตัวเองจะอ่านไหว",
+      "dimension": "acquisition",
+      "public_dimension": "Book Relationship",
+      "pole": "selective",
+      "measure": "Selective",
+      "weight": 1,
+      "reverse": false,
+      "active": true,
+      "required": true,
+      "ui": {
+        "input_type": "likert_1_5",
+        "mobile_hint": "แตะคะแนนที่ตรงกับคุณที่สุด"
+      }
+    },
+    {
+      "id": "q20",
+      "display_id": "Q20",
+      "order": 20,
+      "text": "ปกสวย โปรดี หรือคนพูดถึงเยอะ สามารถทำให้ฉันสนใจหนังสือเล่มหนึ่งทันที",
+      "dimension": "acquisition",
+      "public_dimension": "Book Relationship",
+      "pole": "collector",
+      "measure": "Collector",
+      "weight": 1,
+      "reverse": false,
+      "active": true,
+      "required": true,
+      "ui": {
+        "input_type": "likert_1_5",
+        "mobile_hint": "แตะคะแนนที่ตรงกับคุณที่สุด"
+      }
+    },
+    {
+      "id": "q21",
+      "display_id": "Q21",
+      "order": 21,
+      "text": "หนังสือบางเล่มเป็นพื้นที่ส่วนตัวของฉัน และฉันไม่จำเป็นต้องเล่าให้ใครฟัง",
+      "dimension": "social",
+      "public_dimension": "Sharing Energy",
+      "pole": "private",
+      "measure": "Private",
+      "weight": 1,
+      "reverse": false,
+      "active": true,
+      "required": true,
+      "ui": {
+        "input_type": "likert_1_5",
+        "mobile_hint": "แตะคะแนนที่ตรงกับคุณที่สุด"
+      }
+    },
+    {
+      "id": "q22",
+      "display_id": "Q22",
+      "order": 22,
+      "text": "ถ้าอ่านเจอเล่มที่ดี ฉันมักอยากแนะนำให้ใครบางคนทันที",
+      "dimension": "social",
+      "public_dimension": "Sharing Energy",
+      "pole": "social",
+      "measure": "Social",
+      "weight": 1,
+      "reverse": false,
+      "active": true,
+      "required": true,
+      "ui": {
+        "input_type": "likert_1_5",
+        "mobile_hint": "แตะคะแนนที่ตรงกับคุณที่สุด"
+      }
+    },
+    {
+      "id": "q23",
+      "display_id": "Q23",
+      "order": 23,
+      "text": "ฉันชอบอ่านเงียบ ๆ มากกว่าคุยหรือโพสต์เรื่องที่กำลังอ่าน",
+      "dimension": "social",
+      "public_dimension": "Sharing Energy",
+      "pole": "private",
+      "measure": "Private",
+      "weight": 1,
+      "reverse": false,
+      "active": true,
+      "required": true,
+      "ui": {
+        "input_type": "likert_1_5",
+        "mobile_hint": "แตะคะแนนที่ตรงกับคุณที่สุด"
+      }
+    },
+    {
+      "id": "q24",
+      "display_id": "Q24",
+      "order": 24,
+      "text": "ฉันสนุกกับการดูว่าคนอื่นอ่านอะไร คิดอย่างไร หรือรีวิวหนังสือแบบไหน",
+      "dimension": "social",
+      "public_dimension": "Sharing Energy",
+      "pole": "social",
+      "measure": "Social",
+      "weight": 1,
+      "reverse": false,
+      "active": true,
+      "required": true,
+      "ui": {
+        "input_type": "likert_1_5",
+        "mobile_hint": "แตะคะแนนที่ตรงกับคุณที่สุด"
+      }
+    }
+  ]
+}

@@ -1,0 +1,174 @@
+{
+  "content_version": "1.0.0",
+  "language": "th",
+  "scores": [
+    {
+      "key": "book_hoarding_risk",
+      "label_en": "Book Hoarding Risk",
+      "label_th": "ความเสี่ยงกองดองงอก",
+      "plain_meaning": "โอกาสที่หนังสือจะเข้าบ้านเร็วกว่าถูกอ่าน",
+      "formula_human": "Collector + Broad + Mood + Structured ต่ำ",
+      "levels": [
+        {
+          "min": 0,
+          "max": 33,
+          "level": "low",
+          "copy": "คุณยังเป็นผู้ดูแลชั้นหนังสือที่มีสติอย่างน่านับถือ"
+        },
+        {
+          "min": 34,
+          "max": 66,
+          "level": "medium",
+          "copy": "ยังคุมกองดองได้ แต่ห้ามสบตาป้ายลดราคานานเกินไป"
+        },
+        {
+          "min": 67,
+          "max": 100,
+          "level": "high",
+          "copy": "กองดองของคุณไม่ได้อยู่เฉย ๆ มันกำลังวางแผนขยายอาณาจักร"
+        }
+      ],
+      "share_card_eligible": true
+    },
+    {
+      "key": "finish_probability",
+      "label_en": "Finish Probability",
+      "label_th": "โอกาสอ่านจบ",
+      "plain_meaning": "แนวโน้มที่จะอ่านเล่มที่เริ่มไว้จนจบ",
+      "formula_human": "Structured + Selective + Deep + Mood ต่ำ",
+      "levels": [
+        {
+          "min": 0,
+          "max": 33,
+          "level": "low",
+          "copy": "คุณไม่ได้แพ้ แค่ระบบการอ่านของคุณชอบเปิดหลาย portal พร้อมกัน"
+        },
+        {
+          "min": 34,
+          "max": 66,
+          "level": "medium",
+          "copy": "มีโอกาสจบดี ถ้าเล่มนั้นไม่ถูกอารมณ์ใหม่แซงกลางทาง"
+        },
+        {
+          "min": 67,
+          "max": 100,
+          "level": "high",
+          "copy": "เริ่มแล้วมีแนวโน้มได้เห็นหน้าสุดท้ายสูงมาก"
+        }
+      ],
+      "share_card_eligible": true
+    },
+    {
+      "key": "booktok_susceptibility",
+      "label_en": "BookTok Susceptibility",
+      "label_th": "ภูมิไวต่อกระแสหนังสือ",
+      "plain_meaning": "โอกาสสนใจหนังสือเพราะคนพูดถึง รีวิว หรือ community",
+      "formula_human": "Social + Collector + Broad + Selective ต่ำ",
+      "levels": [
+        {
+          "min": 0,
+          "max": 33,
+          "level": "low",
+          "copy": "กระแสเดินผ่านได้ แต่ต้องผ่าน committee ในใจคุณก่อน"
+        },
+        {
+          "min": 34,
+          "max": 66,
+          "level": "medium",
+          "copy": "คุณรับแรงกระแสได้ แต่ยังมีด่านคัดกรองอยู่บ้าง"
+        },
+        {
+          "min": 67,
+          "max": 100,
+          "level": "high",
+          "copy": "รีวิวดีหนึ่งคลิปอาจทำให้ wishlist สั่นสะเทือน"
+        }
+      ],
+      "share_card_eligible": true
+    },
+    {
+      "key": "reflection_depth",
+      "label_en": "Reflection Depth",
+      "label_th": "ระดับการคิดต่อหลังอ่าน",
+      "plain_meaning": "ความลึกของการเชื่อมโยง จด คิด และนำสิ่งที่อ่านไปสะท้อนชีวิต",
+      "formula_human": "Reflective + Growth + Deep",
+      "levels": [
+        {
+          "min": 0,
+          "max": 33,
+          "level": "low",
+          "copy": "คุณอ่านเพื่อสัมผัสประสบการณ์มากกว่าถอดบทเรียนเป็นข้อ ๆ"
+        },
+        {
+          "min": 34,
+          "max": 66,
+          "level": "medium",
+          "copy": "คุณคิดต่อเมื่อหนังสือแตะจุดที่ใช่ ไม่ได้ต้องวิเคราะห์ทุกหน้า"
+        },
+        {
+          "min": 67,
+          "max": 100,
+          "level": "high",
+          "copy": "อ่านจบหนึ่งบท แต่ความคิดยังประชุมต่ออีกหลายวัน"
+        }
+      ],
+      "share_card_eligible": true
+    },
+    {
+      "key": "sleep_sacrifice_risk",
+      "label_en": "Sleep Sacrifice Risk",
+      "label_th": "ความเสี่ยงนอนดึกเพราะหนังสือ",
+      "plain_meaning": "แนวโน้มที่จะอ่านต่อเพราะอิน เพลิน หรืออยากหนีโลกอีกนิด",
+      "formula_human": "Escape + Immersive + Mood + Collector",
+      "levels": [
+        {
+          "min": 0,
+          "max": 33,
+          "level": "low",
+          "copy": "คุณมีภูมิคุ้มกันต่อการอ่านล่วงเวลาในระดับน่าอิจฉา"
+        },
+        {
+          "min": 34,
+          "max": 66,
+          "level": "medium",
+          "copy": "ยังพอวางเล่มได้ แต่ถ้าเรื่องเข้มเมื่อไร เวลาก็เริ่มไม่ปลอดภัย"
+        },
+        {
+          "min": 67,
+          "max": 100,
+          "level": "high",
+          "copy": "ประโยคว่า 'อีกบทเดียว' ของคุณมีประวัติไม่น่าเชื่อถือ"
+        }
+      ],
+      "share_card_eligible": true
+    },
+    {
+      "key": "recommendation_energy",
+      "label_en": "Recommendation Energy",
+      "label_th": "พลังป้ายยา",
+      "plain_meaning": "แนวโน้มที่จะเล่า แชร์ หรือแนะนำหนังสือให้คนอื่น",
+      "formula_human": "Social + Reflective + Broad + Growth",
+      "levels": [
+        {
+          "min": 0,
+          "max": 33,
+          "level": "low",
+          "copy": "หนังสือดีของคุณอาจเป็นสมบัติส่วนตัวมากกว่าวัตถุสาธารณะ"
+        },
+        {
+          "min": 34,
+          "max": 66,
+          "level": "medium",
+          "copy": "คุณป้ายยาแบบเลือกคน เลือกจังหวะ และเลือกเล่ม"
+        },
+        {
+          "min": 67,
+          "max": 100,
+          "level": "high",
+          "copy": "หนังสือดีอยู่กับคุณไม่นาน เดี๋ยวต้องมีคนโดนส่งต่อ"
+        }
+      ],
+      "share_card_eligible": true
+    }
+  ]
+}

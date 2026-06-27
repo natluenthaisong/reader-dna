@@ -1,0 +1,164 @@
+{
+  "scoring_version": "1.0.0",
+  "question_version": "1.0.0",
+  "axis_order": [
+    "motivation",
+    "breadth",
+    "discipline",
+    "processing",
+    "acquisition",
+    "social"
+  ],
+  "weights": {
+    "motivation": 1.15,
+    "breadth": 1.0,
+    "discipline": 1.1,
+    "processing": 1.2,
+    "acquisition": 1.0,
+    "social": 0.9
+  },
+  "confidence": {
+    "distance_divisor": 420,
+    "gap_divisor": 80,
+    "weights": {
+      "distance": 0.45,
+      "gap": 0.35,
+      "consistency": 0.2
+    },
+    "labels": {
+      "high_min": 0.72,
+      "medium_min": 0.5
+    },
+    "axis_flatness_penalty": {
+      "axis_strength_lt": 20,
+      "multiplier": 0.75
+    }
+  },
+  "forced_highlights": {
+    "scholar": [
+      "reflection_depth"
+    ],
+    "collector": [
+      "book_hoarding_risk"
+    ],
+    "book_goblin": [
+      "book_hoarding_risk",
+      "booktok_susceptibility"
+    ],
+    "connector": [
+      "recommendation_energy"
+    ],
+    "completionist": [
+      "finish_probability"
+    ],
+    "escapist": [
+      "sleep_sacrifice_risk"
+    ]
+  },
+  "archetype_vectors": {
+    "scholar": {
+      "motivation": 80,
+      "breadth": -45,
+      "discipline": 50,
+      "processing": 90,
+      "acquisition": 20,
+      "social": -10
+    },
+    "explorer": {
+      "motivation": 20,
+      "breadth": 90,
+      "discipline": -35,
+      "processing": 10,
+      "acquisition": -20,
+      "social": 20
+    },
+    "strategist": {
+      "motivation": 90,
+      "breadth": 10,
+      "discipline": 70,
+      "processing": 60,
+      "acquisition": 45,
+      "social": 5
+    },
+    "escapist": {
+      "motivation": -85,
+      "breadth": 15,
+      "discipline": -45,
+      "processing": -55,
+      "acquisition": -25,
+      "social": -25
+    },
+    "deep_diver": {
+      "motivation": 55,
+      "breadth": -90,
+      "discipline": 35,
+      "processing": 75,
+      "acquisition": 10,
+      "social": -30
+    },
+    "mood_reader": {
+      "motivation": -10,
+      "breadth": 45,
+      "discipline": -90,
+      "processing": -5,
+      "acquisition": -35,
+      "social": 5
+    },
+    "collector": {
+      "motivation": 10,
+      "breadth": 40,
+      "discipline": -30,
+      "processing": 5,
+      "acquisition": -95,
+      "social": 15
+    },
+    "curator": {
+      "motivation": 40,
+      "breadth": -20,
+      "discipline": 60,
+      "processing": 35,
+      "acquisition": 90,
+      "social": -20
+    },
+    "connector": {
+      "motivation": 25,
+      "breadth": 35,
+      "discipline": 5,
+      "processing": 30,
+      "acquisition": -20,
+      "social": 95
+    },
+    "completionist": {
+      "motivation": 35,
+      "breadth": -10,
+      "discipline": 90,
+      "processing": 20,
+      "acquisition": 40,
+      "social": -10
+    },
+    "sprinter": {
+      "motivation": 20,
+      "breadth": 55,
+      "discipline": 35,
+      "processing": -70,
+      "acquisition": 10,
+      "social": 20
+    },
+    "book_goblin": {
+      "motivation": -5,
+      "breadth": 70,
+      "discipline": -75,
+      "processing": -10,
+      "acquisition": -100,
+      "social": 40
+    }
+  },
+  "derived_scores": {
+    "book_hoarding_risk": "0.45*collector + 0.20*broad + 0.20*mood + 0.15*(100-structured)",
+    "finish_probability": "0.35*structured + 0.25*selective + 0.20*deep + 0.20*(100-mood)",
+    "booktok_susceptibility": "0.30*social + 0.30*collector + 0.25*broad + 0.15*(100-selective)",
+    "reflection_depth": "0.50*reflective + 0.25*growth + 0.25*deep",
+    "sleep_sacrifice_risk": "0.35*escape + 0.30*immersive + 0.20*mood + 0.15*collector",
+    "recommendation_energy": "0.45*social + 0.25*reflective + 0.20*broad + 0.10*growth"
+  }
+}

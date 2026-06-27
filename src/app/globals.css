@@ -1,0 +1,343 @@
+@import url('https://fonts.googleapis.com/css2?family=Mitr:wght@300;400;500;600;700&display=swap');
+
+:root {
+  /* 70s Punk Collage Palette */
+  --bg-primary: #1a1a1a;
+  --bg-panel: #f4f4f0; /* Dirty white paper */
+  --bg-inverted: #FF0055; /* Acid Pink */
+  
+  --text-light: #f4f4f0;
+  --text-dark: #0a0a0a;
+  
+  --accent-red: #FF0044;
+  --accent-yellow: #FFD500;
+  --accent-cyan: #00FFFF; /* Pure Cyan */
+  --accent-pink: #FF0099; /* Punk Hot Pink */
+  --accent-green: #39FF14; /* Neon Green */
+  --accent-white: #ffffff;
+  --accent-black: #000000;
+  
+  --success: #39FF14;
+  --warning: #FFFF00;
+  --destructive: #FF0055;
+  
+  --shadow-color: #000000;
+  
+  --font-heading: 'Mitr', sans-serif;
+  --font-sans: 'Mitr', sans-serif;
+
+  /* Snappy Transitions */
+  --snap-transition: all 0.1s cubic-bezier(0, 0, 0.2, 1);
+}
+
+html {
+  height: 100%;
+  /* Removed smooth scroll for instant snappy feeling */
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background-color: var(--bg-primary);
+  /* Messy Dark Halftone Pattern */
+  background-image: 
+    radial-gradient(#333 15%, transparent 16%),
+    radial-gradient(#333 15%, transparent 16%);
+  background-size: 10px 10px;
+  background-position: 0 0, 5px 5px;
+  color: var(--text-light);
+  font-family: var(--font-sans);
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden; /* Allow scrolling but hide horizontal overflow */
+}
+
+* {
+  box-sizing: border-box;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  margin-top: 0;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--text-light);
+  line-height: 1.1;
+}
+
+a {
+  color: var(--accent-red);
+  text-decoration: none;
+  font-weight: 700;
+  background: var(--accent-yellow);
+  color: var(--text-dark);
+  padding: 2px 4px;
+}
+
+/* 70s Punk Styles */
+
+.p5-panel {
+  background: var(--bg-panel);
+  color: var(--text-dark);
+  position: relative;
+  /* Torn paper texture effect with box-shadow */
+  box-shadow: 
+    5px 5px 0px 0px var(--accent-cyan),
+    10px 10px 0px 0px var(--accent-red),
+    15px 15px 0px 0px var(--accent-yellow),
+    0px 0px 20px rgba(0,0,0,0.5);
+}
+
+.p5-panel::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="noiseFilter"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23noiseFilter)" opacity="0.15"/></svg>');
+  pointer-events: none;
+  z-index: 1;
+}
+
+.p5-panel.red {
+  background: var(--accent-red);
+  color: var(--text-light);
+  clip-path: polygon(1% 2%, 99% 1%, 98% 99%, 0% 98%);
+}
+
+.p5-button {
+  background: var(--accent-white);
+  color: var(--text-dark);
+  border: 3px solid var(--accent-black);
+  padding: clamp(0.5rem, 2vh, 1rem) clamp(1rem, 3vw, 2rem);
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: clamp(1.25rem, 4vw, 1.75rem);
+  cursor: pointer;
+  /* Magazine cutout jagged edge */
+  clip-path: polygon(
+    1% 4%, 97% 1%, 99% 97%, 3% 99%
+  );
+  transition: all 0.1s steps(3);
+  text-align: center;
+  display: inline-block;
+  text-transform: uppercase;
+  box-shadow: 4px 4px 0 var(--accent-black);
+  position: relative;
+}
+
+.p5-button::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="noiseFilter"><feTurbulence type="fractalNoise" baseFrequency="0.6" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23noiseFilter)" opacity="0.1"/></svg>');
+  pointer-events: none;
+}
+
+.p5-button:hover {
+  background: var(--accent-yellow);
+  color: var(--text-dark);
+  transform: scale(1.05) rotate(calc(-2deg + (4deg * var(--random, 0.5))));
+  box-shadow: 8px 8px 0 var(--accent-red);
+}
+
+.p5-button:active {
+  transform: scale(0.95) rotate(-1deg);
+  background: var(--accent-cyan);
+  box-shadow: 2px 2px 0 var(--accent-black);
+}
+
+.p5-button.inverted {
+  background: var(--accent-black);
+  color: var(--accent-white);
+  border: 3px solid var(--accent-white);
+}
+
+.p5-button.inverted:hover {
+  background: var(--accent-red);
+  color: var(--text-dark);
+}
+
+/* Typography Utilities */
+.p5-title {
+  color: var(--text-dark);
+  text-shadow: 3px 3px 0 var(--accent-cyan), -3px -3px 0 var(--accent-red);
+  letter-spacing: 2px;
+  background: var(--accent-white);
+  padding: 5px 15px;
+  display: inline-block;
+  border: 4px solid var(--accent-black);
+  transform: rotate(-3deg);
+  box-shadow: 8px 8px 0 var(--accent-black);
+}
+
+.p5-text-bg-black {
+  background: var(--accent-black);
+  color: var(--accent-yellow);
+  padding: 6px 12px;
+  clip-path: polygon(1% 2%, 99% 0%, 98% 98%, 2% 100%);
+  display: inline-block;
+  font-weight: 900;
+  border: 2px solid var(--accent-white);
+}
+
+/* Ransom Note Utilities */
+.ransom-word {
+  display: inline-block;
+  padding: 0px 8px;
+  margin: 0px 2px;
+  color: var(--accent-black);
+  background: var(--accent-white);
+  font-weight: 900;
+  text-transform: uppercase;
+  border: 2px solid var(--accent-black);
+  box-shadow: 3px 3px 0 rgba(0,0,0,0.5);
+}
+
+/* Tape Decoration */
+.tape {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.6);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  backdrop-filter: blur(2px);
+  z-index: 20;
+  /* Tape texture */
+  background-image: linear-gradient(90deg, transparent 50%, rgba(255,255,255,0.3) 50%);
+  background-size: 4px 4px;
+}
+
+/* Halftone Yellow */
+.halftone-yellow {
+  background-color: var(--accent-yellow) !important;
+  background-image: 
+    radial-gradient(var(--accent-black) 25%, transparent 26%),
+    radial-gradient(var(--accent-black) 25%, transparent 26%) !important;
+  background-size: 12px 12px !important;
+  background-position: 0 0, 6px 6px !important;
+  color: var(--accent-black) !important;
+}
+
+/* Text Highlight for readability on messy backgrounds */
+.text-highlight-white {
+  background-color: var(--accent-white);
+  padding: 0 5px;
+  box-shadow: 2px 2px 0 var(--accent-black);
+}
+
+/* Leopard Print Pattern for Red */
+.leopard-red {
+  background-color: var(--accent-red) !important;
+  background-image: 
+    /* Spot 1: Top Left */
+    radial-gradient(circle at 25% 25%, var(--accent-white) 6%, transparent 7%),
+    radial-gradient(circle at 17% 20%, var(--accent-red) 10%, transparent 11%),
+    radial-gradient(ellipse at 25% 25%, var(--accent-black) 16%, transparent 17%),
+    
+    /* Spot 2: Top Right (solid blob) */
+    radial-gradient(ellipse at 75% 20%, var(--accent-black) 8%, transparent 9%),
+    radial-gradient(circle at 82% 25%, var(--accent-black) 6%, transparent 7%),
+    
+    /* Spot 3: Bottom Right */
+    radial-gradient(circle at 75% 75%, var(--accent-white) 7%, transparent 8%),
+    radial-gradient(circle at 85% 80%, var(--accent-red) 11%, transparent 12%),
+    radial-gradient(ellipse at 75% 75%, var(--accent-black) 18%, transparent 19%),
+    
+    /* Spot 4: Bottom Left (solid blob) */
+    radial-gradient(circle at 25% 75%, var(--accent-black) 9%, transparent 10%),
+    radial-gradient(ellipse at 20% 70%, var(--accent-black) 7%, transparent 8%),
+    
+    /* Spot 5: Center (horseshoe) */
+    radial-gradient(circle at 50% 50%, var(--accent-white) 5%, transparent 6%),
+    radial-gradient(circle at 55% 45%, var(--accent-red) 8%, transparent 9%),
+    radial-gradient(ellipse at 50% 50%, var(--accent-black) 14%, transparent 15%),
+
+    /* Small dots to fill gaps */
+    radial-gradient(circle at 50% 15%, var(--accent-black) 4%, transparent 5%),
+    radial-gradient(circle at 10% 50%, var(--accent-black) 5%, transparent 6%),
+    radial-gradient(circle at 90% 50%, var(--accent-black) 3%, transparent 4%),
+    radial-gradient(circle at 50% 85%, var(--accent-black) 5%, transparent 6%)
+    !important;
+  background-size: 150px 150px !important;
+}
+
+/* Tiger Print Pattern for Pink */
+.tiger-pink {
+  background-color: var(--accent-pink) !important;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><defs><filter id='t' x='-50%' y='-50%' width='200%' height='200%'><feTurbulence type='fractalNoise' baseFrequency='0.004 0.025' numOctaves='3'/><feColorMatrix type='matrix' values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 35 -17'/></filter></defs><g transform='rotate(-40 200 200)'><rect width='200%' height='200%' x='-50%' y='-50%' filter='url(%23t)'/></g></svg>") !important;
+  background-size: 400px 400px !important;
+}
+
+/* Animations */
+@keyframes p5SnapIn {
+  0% { opacity: 0; transform: scale(1.2) translate(-20px, 20px) skewX(10deg); filter: contrast(2); }
+  100% { opacity: 1; transform: scale(1) translate(0, 0) skewX(0deg); filter: contrast(1); }
+}
+
+.animate-p5-snap {
+  animation: p5SnapIn 0.2s cubic-bezier(0.1, 0.9, 0.2, 1) forwards;
+}
+
+@keyframes glitch {
+  0% { transform: translate(0) }
+  20% { transform: translate(-2px, 2px) }
+  40% { transform: translate(-2px, -2px) }
+  60% { transform: translate(2px, 2px) }
+  80% { transform: translate(2px, -2px) }
+  100% { transform: translate(0) }
+}
+
+.hover-glitch:hover:not(:disabled) {
+  animation: glitch 0.1s linear infinite;
+}
+
+/* Bouncy hover for options */
+.hover-bounce {
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s !important;
+}
+.hover-bounce:hover:not(:disabled) {
+  transform: scale(var(--hover-scale)) var(--base-rotate) !important;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.blink-cursor {
+  animation: blink 0.8s step-end infinite;
+  display: inline;
+  margin-left: 4px;
+  color: var(--accent-red);
+}
+
+.solid-cursor {
+  display: inline;
+  margin-left: 4px;
+  color: var(--accent-red);
+}
+
+/* Container */
+.container {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: clamp(1rem, 4vh, 2rem);
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Desktop Scale Down */
+@media (min-width: 1024px) {
+  .container {
+    zoom: 0.8;
+  }
+  
+  .desktop-zoom {
+    zoom: 0.8;
+    transform-origin: center center;
+  }
+}
+
