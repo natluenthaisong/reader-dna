@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useQuizStore } from '@/store/useQuizStore';
+import { playPunkJingle } from '@/utils/audio';
 
 export default function ResultClient({ archetype }: { archetype: any }) {
   const router = useRouter();
@@ -81,7 +82,11 @@ export default function ResultClient({ archetype }: { archetype: any }) {
   };
 
   return (
-    <main className="container animate-p5-snap" style={{ alignItems: 'center' }}>
+    <main 
+      className="container animate-p5-snap" 
+      style={{ alignItems: 'center', cursor: 'pointer' }}
+      onClick={() => playPunkJingle()}
+    >
         
         {/* THIS IS THE ACTUAL CAPTURED CARD */}
         <div ref={resultRef} id="result-card" style={{
