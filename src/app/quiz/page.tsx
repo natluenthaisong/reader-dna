@@ -353,69 +353,46 @@ export default function QuizPage() {
     }
   };
 
-  // Intense sound for final question (Shattering / Explosion / Divebomb)
+  // 8-bit Ringtone Jingle for final question: "Sun-day Book-Club"
   const playFinalSound = () => {
     try {
       const ctx = getAudioCtx();
-      if (!ctx) return;
-      
-      // High frequency squeal/feedback (A4)
-      const root = 440.0; 
-      const freqs = [root, root * 1.5, root * 2, root * 3];
+      if (!ctx || ctx.state === 'suspended') return;
       
       const masterGain = ctx.createGain();
-      masterGain.gain.value = 0.15; // Lower volume so it doesn't jump scare
-      
-      const waveShaper = ctx.createWaveShaper();
-      const curve = new Float32Array(44100);
-      for (let i = 0; i < 44100; ++i) {
-        let x = i * 2 / 44100 - 1;
-        curve[i] = Math.sign(x) * (1 - Math.exp(-Math.abs(x) * 10)); // Brutal fuzz
-      }
-      waveShaper.curve = curve;
-      
-      const envGain = ctx.createGain();
-      envGain.gain.setValueAtTime(1, ctx.currentTime);
-      envGain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 2.5); // Slightly shorter
-      
-      envGain.connect(waveShaper);
-      waveShaper.connect(masterGain);
+      masterGain.gain.value = 0.15; // Moderate volume
       masterGain.connect(ctx.destination);
       
-      freqs.forEach((f, i) => {
+      // "Sun-day Book-Club" jingle notes (C5, D5, E5, G5)
+      const notes = [
+        { freq: 523.25, time: 0, dur: 0.15 },    // Sun
+        { freq: 587.33, time: 0.2, dur: 0.15 },  // day
+        { freq: 659.25, time: 0.4, dur: 0.15 },  // Book
+        { freq: 783.99, time: 0.6, dur: 0.5 }    // Club!
+      ];
+      
+      notes.forEach(note => {
         const osc = ctx.createOscillator();
-        osc.type = i % 2 === 0 ? 'sawtooth' : 'square';
-        // Divebomb pitch drop effect (starting from very high)
-        osc.frequency.setValueAtTime(f * 2, ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(f * 0.5, ctx.currentTime + 0.3);
-        osc.detune.value = (Math.random() - 0.5) * 25;
-        osc.connect(envGain);
-        osc.start();
-        osc.stop(ctx.currentTime + 2.6);
+        osc.type = 'square'; // Classic 8-bit ringtone sound
+        osc.frequency.value = note.freq;
+        
+        const env = ctx.createGain();
+        // Envelope: quick attack, hold, release
+        env.gain.setValueAtTime(0, ctx.currentTime + note.time);
+        env.gain.linearRampToValueAtTime(1, ctx.currentTime + note.time + 0.02);
+        env.gain.setValueAtTime(1, ctx.currentTime + note.time + note.dur - 0.05);
+        env.gain.linearRampToValueAtTime(0, ctx.currentTime + note.time + note.dur);
+        
+        osc.connect(env);
+        env.connect(masterGain);
+        
+        osc.start(ctx.currentTime + note.time);
+        osc.stop(ctx.currentTime + note.time + note.dur);
       });
       
-      // White noise explosion / Shatter (High frequency)
-      const bufferSize = ctx.sampleRate * 2; 
-      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-      const data = buffer.getChannelData(0);
-      for (let i = 0; i < bufferSize; i++) {
-        data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ctx.sampleRate * 0.15)); 
-      }
-      const noise = ctx.createBufferSource();
-      noise.buffer = buffer;
-      
-      const filter = ctx.createBiquadFilter();
-      filter.type = 'highpass';
-      filter.frequency.value = 4000; // Much higher frequency shatter
-      
-      const noiseGain = ctx.createGain();
-      noiseGain.gain.value = 0.3; // Lower volume for noise
-      
-      noise.connect(filter);
-      filter.connect(waveShaper); // Run shatter through distortion
-      noise.start();
-      
-    } catch (e) {}
+    } catch (e) {
+      // Ignore if audio isn't supported
+    }
   };
 
   const handleSelect = async (value: number, index: number) => {
