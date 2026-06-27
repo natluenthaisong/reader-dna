@@ -538,9 +538,9 @@ export default function QuizPage() {
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span style={{ fontSize: '0.8em', opacity: 0.6 }}>◄</span>
+            <span style={{ fontSize: '0.8em', opacity: currentQuestionIndex > 0 ? 0.6 : 0, transition: 'opacity 0.2s' }}>◄</span>
             Q.{currentQuestionIndex + 1}
-            <span style={{ fontSize: '0.8em', opacity: 0.6 }}>►</span>
+            <span style={{ fontSize: '0.8em', opacity: currentQuestionIndex < maxUnlockedIndex ? 0.6 : 0, transition: 'opacity 0.2s' }}>►</span>
           </div>
         </div>
         
