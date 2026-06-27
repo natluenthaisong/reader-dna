@@ -458,8 +458,8 @@ export default function QuizPage() {
                   top: '50%',
                   left: `${(idx / (questions.length - 1)) * 100}%`,
                   transform: isCurrent ? 'translate(-50%, -50%) skewX(-10deg) scale(1.2)' : 'translate(-50%, -50%) skewX(-10deg)',
-                  width: isCurrent ? '16px' : '10px',
-                  height: isCurrent ? '24px' : '14px', // Taller to look like notches/steppers
+                  width: isCurrent ? '24px' : '16px',
+                  height: isCurrent ? '36px' : '24px', // Taller to look like notches/steppers
                   backgroundColor: isCurrent ? 'var(--accent-yellow)' : 'var(--accent-black)',
                   border: isCurrent ? '2px solid var(--accent-black)' : '1px solid var(--accent-white)',
                   cursor: canClick ? 'pointer' : 'default',
