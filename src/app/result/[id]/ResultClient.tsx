@@ -53,10 +53,33 @@ export default function ResultClient({ archetype }: { archetype: any }) {
         
         const dataUrl = await toPng(resultRef.current, { 
           pixelRatio: 2,
-          // Removed backgroundColor: '#FFD500' to allow the dark halftone background to render
         });
         
-        // Directly download the PNG image
+        // Try Native Share first (works on iOS/Android for files if supported)
+        if (navigator.share) {
+          try {
+            const res = await fetch(dataUrl);
+            const blob = await res.blob();
+            const file = new File([blob], `reader-dna-${archetype.id}.png`, { type: 'image/png' });
+            // Some browsers require testing if sharing files is supported
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+              await navigator.share({
+                title: 'My Reader DNA',
+                files: [file]
+              });
+              return; // Success!
+            }
+          } catch (shareError: any) {
+            if (shareError.name !== 'AbortError') {
+              console.log('Error sharing:', shareError);
+            }
+            // If user aborted or error happened, we don't necessarily want to fallback to download
+            // but for safety, we can just return.
+            return;
+          }
+        }
+
+        // Fallback for desktop or unsupported mobile
         const link = document.createElement('a');
         link.download = `reader-dna-${archetype.id}.png`;
         link.href = dataUrl;
