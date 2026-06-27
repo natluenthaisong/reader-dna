@@ -104,7 +104,7 @@ export default function QuizPage() {
 
   const questions = questionsData.questions;
   const currentQuestion = questions[currentQuestionIndex];
-  const progress = ((currentQuestionIndex) / questions.length) * 100;
+  const progress = (currentQuestionIndex / (questions.length - 1)) * 100;
 
   // Define 5 distinct chaotic 8-point polygons
   const panelShapes = [
@@ -398,43 +398,6 @@ export default function QuizPage() {
             <path d="M 0 12 L 18 0 L 14 8 L 40 4 L 38 18 L 14 14 L 18 24 Z" />
           </svg>
         </button>
-
-        {/* Breadcrumbs */}
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginLeft: 'auto', marginRight: '10px', maxWidth: '70%', justifyContent: 'flex-end', alignItems: 'center' }}>
-          {questions.map((_, idx) => {
-            const isPast = idx < currentQuestionIndex;
-            const isCurrent = idx === currentQuestionIndex;
-            const canClick = isPast && !isTransitioning;
-            
-            return (
-              <button
-                key={idx}
-                onClick={() => {
-                  if (canClick) {
-                    playClickSound(-1);
-                    jumpToQuestion(idx);
-                  }
-                }}
-                disabled={!canClick}
-                title={canClick ? `กลับไปข้อ ${idx + 1}` : undefined}
-                className={canClick ? "hover-glitch" : ""}
-                style={{
-                  width: isCurrent ? '18px' : '12px',
-                  height: isCurrent ? '18px' : '12px',
-                  backgroundColor: isCurrent ? 'var(--accent-yellow)' : isPast ? 'var(--accent-cyan)' : 'var(--accent-black)',
-                  border: '2px solid var(--accent-white)',
-                  cursor: canClick ? 'pointer' : 'default',
-                  opacity: (isPast || isCurrent) ? 1 : 0.4,
-                  transition: 'all 0.2s ease',
-                  transform: isCurrent ? 'skewX(-10deg) rotate(5deg)' : 'skewX(-10deg)',
-                  boxShadow: isCurrent ? '3px 3px 0 var(--accent-red)' : 'none',
-                  padding: 0
-                }}
-                aria-label={`Jump to question ${idx + 1}`}
-              />
-            );
-          })}
-        </div>
       </div>
 
       {/* Jagged Progress Bar (Like torn tape) */}
@@ -465,6 +428,50 @@ export default function QuizPage() {
             background: 'var(--accent-cyan)', 
             transition: 'width 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
           }} />
+        </div>
+        
+        {/* Breadcrumb Steppers */}
+        <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '15px', pointerEvents: 'none', zIndex: 11 }}>
+          {questions.map((_, idx) => {
+            const isPast = idx < currentQuestionIndex;
+            const isCurrent = idx === currentQuestionIndex;
+            
+            // Only show past and current
+            if (!isPast && !isCurrent) return null;
+            
+            const canClick = isPast && !isTransitioning;
+            
+            return (
+              <button
+                key={idx}
+                onClick={() => {
+                  if (canClick) {
+                    playClickSound(-1);
+                    jumpToQuestion(idx);
+                  }
+                }}
+                disabled={!canClick}
+                title={canClick ? `กลับไปข้อ ${idx + 1}` : undefined}
+                className={canClick ? "hover-glitch" : ""}
+                style={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: `${(idx / (questions.length - 1)) * 100}%`,
+                  transform: isCurrent ? 'translate(-50%, -50%) skewX(-10deg) scale(1.2)' : 'translate(-50%, -50%) skewX(-10deg)',
+                  width: isCurrent ? '16px' : '10px',
+                  height: isCurrent ? '24px' : '14px', // Taller to look like notches/steppers
+                  backgroundColor: isCurrent ? 'var(--accent-yellow)' : 'var(--accent-black)',
+                  border: isCurrent ? '2px solid var(--accent-black)' : '1px solid var(--accent-white)',
+                  cursor: canClick ? 'pointer' : 'default',
+                  pointerEvents: 'auto',
+                  transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+                  boxShadow: isCurrent ? '2px 2px 0 var(--accent-red)' : 'none',
+                  padding: 0
+                }}
+                aria-label={`Jump to question ${idx + 1}`}
+              />
+            );
+          })}
         </div>
       </div>
 
