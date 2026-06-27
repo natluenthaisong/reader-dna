@@ -86,24 +86,29 @@ export const playSynthBlip = (freq: number = 400) => {
     const ctx = getAudioCtx();
     if (!ctx) return;
     
-    if (ctx.state === 'suspended') {
-      ctx.resume().catch(() => {});
-    }
-    if (ctx.state !== 'running') return;
+    const play = () => {
+      try {
+        const osc = ctx.createOscillator();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, ctx.currentTime);
+        
+        const gain = ctx.createGain();
+        gain.gain.setValueAtTime(0, ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 0.02); // Louder (0.3)
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2); // Longer (0.2s)
+        
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        
+        osc.start();
+        osc.stop(ctx.currentTime + 0.25);
+      } catch (err) {}
+    };
 
-    const osc = ctx.createOscillator();
-    osc.type = 'triangle';
-    osc.frequency.setValueAtTime(freq, ctx.currentTime);
-    
-    const gain = ctx.createGain();
-    gain.gain.setValueAtTime(0, ctx.currentTime);
-    gain.gain.linearRampToValueAtTime(0.1, ctx.currentTime + 0.01);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
-    
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    
-    osc.start();
-    osc.stop(ctx.currentTime + 0.1);
+    if (ctx.state === 'suspended') {
+      ctx.resume().then(play).catch(() => {});
+    } else {
+      play();
+    }
   } catch (e) {}
 };
