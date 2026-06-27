@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useQuizStore } from '@/store/useQuizStore';
 import questionsData from '../../../content/questions.json';
@@ -88,6 +88,58 @@ const TypewriterText = ({ text, id }: { text: string, id: string }) => {
   );
 };
 
+const StickerDecorations = ({ questionIndex }: { questionIndex: number }) => {
+  const stickers = [
+    { id: 'lightning', path: <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="black" strokeWidth="1.5" fill="var(--accent-yellow)" strokeLinejoin="round" /> },
+    { id: 'book', path: <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" stroke="black" strokeWidth="1.5" fill="var(--accent-white)" strokeLinejoin="round" /> },
+    { id: 'glasses', path: <path d="M2 14c0-2.8 2.2-5 5-5s5 2.2 5 5-2.2 5-5 5-5-2.2-5-5Zm10 0c0-2.8 2.2-5 5-5s5 2.2 5 5-2.2 5-5 5-5-2.2-5-5Zm-5 0h5M2 14h-2M24 14h-2" stroke="black" strokeWidth="2" fill="none" /> },
+    { id: 'pencil', path: <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5zM12 20h9" stroke="black" strokeWidth="1.5" fill="var(--accent-cyan)" strokeLinejoin="round" /> },
+    { id: 'star', path: <path d="M12 2l3 6 6 .5-4.5 4.5 1 6-5.5-3-5.5 3 1-6-4.5-4.5 6-.5z" stroke="black" strokeWidth="1.5" fill="var(--accent-red)" strokeLinejoin="round" /> }
+  ];
+
+  const getRand = (seed: number, min: number, max: number) => {
+    const x = Math.sin(seed + 1) * 10000;
+    const r = x - Math.floor(x);
+    return Math.floor(r * (max - min + 1)) + min;
+  };
+
+  const count = getRand(questionIndex * 10, 2, 4);
+  const selectedStickers = [];
+  
+  for (let i = 0; i < count; i++) {
+    const stickerIdx = getRand(questionIndex * 20 + i, 0, stickers.length - 1);
+    const top = getRand(questionIndex * 30 + i, 15, 80);
+    // Keep mostly on the left side (0-20%)
+    const left = getRand(questionIndex * 40 + i, -5, 20); 
+    const size = getRand(questionIndex * 50 + i, 45, 80);
+    const rotation = getRand(questionIndex * 60 + i, -45, 45);
+    selectedStickers.push({ ...stickers[stickerIdx], top, left, size, rotation, key: i });
+  }
+
+  return (
+    <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: -1 }}>
+      {selectedStickers.map(s => (
+        <svg 
+          key={s.key} 
+          viewBox="0 0 24 24" 
+          width={s.size} 
+          height={s.size} 
+          style={{ 
+            position: 'absolute', 
+            top: `${s.top}%`, 
+            left: `${s.left}%`, 
+            transform: `rotate(${s.rotation}deg)`,
+            filter: 'drop-shadow(3px 3px 0 var(--accent-black))',
+            transition: 'all 0.6s cubic-bezier(0.68, -0.6, 0.32, 1.6)'
+          }}
+        >
+          {s.path}
+        </svg>
+      ))}
+    </div>
+  );
+};
+
 
 
 export default function QuizPage() {
@@ -97,6 +149,10 @@ export default function QuizPage() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  
+  // Drag state for Q.n scrubber
+  const progressBarRef = useRef<HTMLDivElement>(null);
+  const [isDraggingQ, setIsDraggingQ] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -105,6 +161,36 @@ export default function QuizPage() {
   const questions = questionsData.questions;
   const currentQuestion = questions[currentQuestionIndex];
   const progress = (currentQuestionIndex / (questions.length - 1)) * 100;
+  
+  const maxUnlockedIndex = Math.min(questions.length - 1, Object.keys(answers).length);
+
+  const handlePointerDown = (e: React.PointerEvent) => {
+    if (isTransitioning) return;
+    e.currentTarget.setPointerCapture(e.pointerId);
+    setIsDraggingQ(true);
+  };
+
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (!isDraggingQ || !progressBarRef.current || isTransitioning) return;
+    
+    const rect = progressBarRef.current.getBoundingClientRect();
+    let newProgress = ((e.clientX - rect.left) / rect.width) * 100;
+    newProgress = Math.max(0, Math.min(100, newProgress));
+    
+    const stepPercent = 100 / (questions.length - 1);
+    const closestIndex = Math.round(newProgress / stepPercent);
+    const snappedIndex = Math.min(closestIndex, maxUnlockedIndex);
+    
+    if (snappedIndex !== currentQuestionIndex) {
+      playClickSound(-1); // light click sound
+      jumpToQuestion(snappedIndex);
+    }
+  };
+
+  const handlePointerUp = (e: React.PointerEvent) => {
+    setIsDraggingQ(false);
+    e.currentTarget.releasePointerCapture(e.pointerId);
+  };
 
   // Define 5 distinct chaotic 8-point polygons
   const panelShapes = [
@@ -367,6 +453,8 @@ export default function QuizPage() {
       {/* Decorative Punk Background Elements */}
       <div className="tiger-pink" style={{ position: 'fixed', bottom: '-10%', left: '-5%', width: '110%', height: '50vh', clipPath: 'polygon(0 40%, 100% 0, 100% 100%, 0 100%)', zIndex: -2, opacity: 0.9 }}></div>
       <div className="leopard-red" style={{ position: 'fixed', top: '-10%', right: '-5%', width: '50%', height: '60vh', clipPath: 'polygon(0 0, 100% 0, 100% 100%, 20% 80%)', zIndex: -3, mixBlendMode: 'multiply' }}></div>
+      
+      <StickerDecorations questionIndex={currentQuestionIndex} />
 
       {/* Progress Header */}
       <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', marginBottom: 'clamp(1rem, 3vh, 2rem)' }}>
@@ -401,10 +489,17 @@ export default function QuizPage() {
       </div>
 
       {/* Jagged Progress Bar (Like torn tape) */}
-      <div style={{ position: 'relative', width: '100%', marginBottom: 'clamp(2rem, 5vh, 3rem)' }}>
+      <div 
+        ref={progressBarRef}
+        style={{ position: 'relative', width: '100%', marginBottom: 'clamp(2rem, 5vh, 3rem)' }}
+      >
         {/* Dynamic Q.n Marker */}
         <div 
           className="p5-text-bg-black" 
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onPointerCancel={handlePointerUp}
           style={{ 
             position: 'absolute', 
             top: '-35px', 
@@ -412,10 +507,12 @@ export default function QuizPage() {
             transform: `translateX(-${progress}%) rotate(-2deg)`,
             fontSize: 'clamp(1rem, 3vw, 1.25rem)', 
             fontWeight: '800',
-            transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-            zIndex: 10,
+            transition: isDraggingQ ? 'none' : 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+            zIndex: 15,
             whiteSpace: 'nowrap',
-            pointerEvents: 'none'
+            cursor: isTransitioning ? 'default' : (isDraggingQ ? 'grabbing' : 'grab'),
+            pointerEvents: isTransitioning ? 'none' : 'auto',
+            touchAction: 'none'
           }}
         >
           Q.{currentQuestionIndex + 1}
@@ -433,13 +530,12 @@ export default function QuizPage() {
         {/* Breadcrumb Steppers */}
         <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '15px', pointerEvents: 'none', zIndex: 11 }}>
           {questions.map((_, idx) => {
-            const isPast = idx < currentQuestionIndex;
+            const isUnlocked = idx <= maxUnlockedIndex;
             const isCurrent = idx === currentQuestionIndex;
             
-            // Only show past and current
-            if (!isPast && !isCurrent) return null;
+            if (!isUnlocked) return null;
             
-            const canClick = isPast && !isTransitioning;
+            const canClick = isUnlocked && !isTransitioning;
             
             return (
               <button
