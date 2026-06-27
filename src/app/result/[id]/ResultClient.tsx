@@ -126,14 +126,26 @@ export default function ResultClient({ archetype }: { archetype: any }) {
               >
                 {(isHoveringRansom ? "SUNDAY BOOK CLUB" : archetype.english_name.toUpperCase()).split('').map((char: string, i: number) => {
                   if (char === ' ') return <div key={i} style={{ width: '20px' }} />;
+                  
+                  let delay = '0s';
+                  if (isHoveringRansom) {
+                    if (i >= 12) delay = '0.75s';
+                    else if (i >= 7) delay = '0.5s';
+                    else if (i >= 3) delay = '0.25s';
+                  }
+
+                  const rotation = Math.random() * 20 - 10;
+                  
                   return (
-                    <span key={i} className={`ransom-word ${i % 4 === 0 ? 'halftone-yellow' : ''}`} style={{ 
+                    <span key={i} className={`ransom-word ${i % 4 === 0 ? 'halftone-yellow' : ''} ${isHoveringRansom ? 'flip-in' : ''}`} style={{ 
                       fontSize: 'clamp(36px, 6vw, 52px)', 
                       padding: '4px 12px',
-                      transform: `rotate(${Math.random() * 20 - 10}deg)`,
+                      '--base-r': `${rotation}deg`,
+                      transform: `rotate(${rotation}deg)`,
+                      animationDelay: delay,
                       background: ['var(--accent-yellow)', 'var(--accent-white)', 'var(--accent-cyan)', 'var(--accent-red)'][i % 4],
                       color: ['var(--accent-black)', 'var(--accent-black)', 'var(--accent-black)', 'var(--accent-white)'][i % 4]
-                    }}>
+                    } as any}>
                       {char}
                     </span>
                   );
