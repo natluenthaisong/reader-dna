@@ -12,8 +12,16 @@ export const getAudioCtx = () => {
 export const playPunkJingle = (pitchMultiplier: number = 1) => {
   try {
     const ctx = getAudioCtx();
-    if (!ctx || ctx.state === 'suspended') return;
+    if (!ctx) return;
     
+    if (ctx.state === 'suspended') {
+      // Attempt to resume. If it fails due to lack of user gesture, we catch and ignore to avoid unhandled rejections
+      ctx.resume().catch(() => {});
+    }
+
+    // Do not generate sound if the context is still suspended, avoiding warnings
+    if (ctx.state !== 'running') return;
+
     const masterGain = ctx.createGain();
     masterGain.gain.value = 0.2; 
     

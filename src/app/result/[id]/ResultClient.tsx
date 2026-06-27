@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useQuizStore } from '@/store/useQuizStore';
-import { playPunkJingle } from '@/utils/audio';
+import { playPunkJingle, getAudioCtx } from '@/utils/audio';
 
 export default function ResultClient({ archetype }: { archetype: any }) {
   const router = useRouter();
@@ -15,6 +15,22 @@ export default function ResultClient({ archetype }: { archetype: any }) {
   const [isHoveringRansom, setIsHoveringRansom] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const resultRef = useRef<HTMLDivElement>(null);
+
+  // Unlock AudioContext on first interaction
+  useEffect(() => {
+    const unlockAudio = () => {
+      const ctx = getAudioCtx();
+      if (ctx && ctx.state === 'suspended') {
+        ctx.resume().catch(() => {});
+      }
+    };
+    window.addEventListener('click', unlockAudio, { once: true });
+    window.addEventListener('touchstart', unlockAudio, { once: true });
+    return () => {
+      window.removeEventListener('click', unlockAudio);
+      window.removeEventListener('touchstart', unlockAudio);
+    };
+  }, []);
 
   useEffect(() => {
     setMounted(true);
