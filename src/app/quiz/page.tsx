@@ -489,6 +489,16 @@ export default function QuizPage() {
           transition: 'all 0.6s cubic-bezier(0.68, -0.6, 0.32, 1.6)' // Spring damping effect!
         }}
       >
+        {/* Punk Portrait Cutout (Dynamically loaded based on question) */}
+        <div className="punk-portrait-wrapper" style={{ transform: currentQuestionIndex % 2 === 0 ? 'rotate(3deg)' : 'rotate(-3deg)' }}>
+          <img 
+            src={`/authors/${currentQuestionIndex + 1}.png`} 
+            alt="" 
+            onError={(e) => { e.currentTarget.style.display = 'none'; }}
+            onLoad={(e) => { e.currentTarget.style.display = 'block'; }}
+          />
+        </div>
+
         {/* Absolute Background Panel that gets clipped, so it doesn't clip the content */}
         <div 
           className="p5-panel"
