@@ -113,17 +113,25 @@ export default function ResultClient({ archetype }: { archetype: any }) {
               <div className="p5-text-bg-black" style={{ fontSize: '14px', transform: 'rotate(-3deg)' }}>CONFIDENTIAL FILE</div>
               
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginTop: '12px' }}>
-                {archetype.thai_name.split('').map((char: string, i: number) => (
-                  <span key={i} className={`ransom-word ${i % 4 === 0 ? 'halftone-yellow' : ''}`} style={{ 
-                    fontSize: '52px', 
-                    padding: '4px 12px',
-                    transform: `rotate(${Math.random() * 20 - 10}deg)`,
-                    background: ['var(--accent-yellow)', 'var(--accent-white)', 'var(--accent-cyan)', 'var(--accent-red)'][i % 4],
-                    color: ['var(--accent-black)', 'var(--accent-black)', 'var(--accent-black)', 'var(--accent-white)'][i % 4]
-                  }}>
-                    {char}
-                  </span>
-                ))}
+                {archetype.english_name.toUpperCase().split('').map((char: string, i: number) => {
+                  if (char === ' ') return <div key={i} style={{ width: '20px' }} />;
+                  return (
+                    <span key={i} className={`ransom-word ${i % 4 === 0 ? 'halftone-yellow' : ''}`} style={{ 
+                      fontSize: 'clamp(36px, 6vw, 52px)', 
+                      padding: '4px 12px',
+                      transform: `rotate(${Math.random() * 20 - 10}deg)`,
+                      background: ['var(--accent-yellow)', 'var(--accent-white)', 'var(--accent-cyan)', 'var(--accent-red)'][i % 4],
+                      color: ['var(--accent-black)', 'var(--accent-black)', 'var(--accent-black)', 'var(--accent-white)'][i % 4]
+                    }}>
+                      {char}
+                    </span>
+                  );
+                })}
+              </div>
+              
+              {/* Thai Translation Banner */}
+              <div className="p5-text-bg-black" style={{ fontSize: '22px', marginTop: '16px', transform: 'rotate(1deg)', display: 'inline-block' }}>
+                {archetype.thai_name}
               </div>
               
               <h3 style={{ fontSize: '19px', color: 'var(--accent-black)', background: 'var(--accent-green)', display: 'inline-block', padding: '8px 16px', transform: 'rotate(2deg)', border: '2px solid black', marginTop: '16px', boxShadow: '5px 5px 0 var(--accent-red)' }}>
