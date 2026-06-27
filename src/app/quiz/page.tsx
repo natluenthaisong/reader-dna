@@ -477,10 +477,10 @@ export default function QuizPage() {
         {/* Flash Ransom Note Overlay */}
         {isSubmitting && !errorMsg && (
           <div className="ransom-flash-overlay">
-            <span className="ransom-word word-1">SUN</span>
-            <span className="ransom-word word-2">DAY</span>
-            <span className="ransom-word word-3">BOOK</span>
-            <span className="ransom-word word-4">CLUB</span>
+            <span className="flash-ransom-word word-1">SUN</span>
+            <span className="flash-ransom-word word-2">DAY</span>
+            <span className="flash-ransom-word word-3">BOOK</span>
+            <span className="flash-ransom-word word-4">CLUB</span>
           </div>
         )}
 

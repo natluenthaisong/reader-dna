@@ -442,7 +442,7 @@ a {
   pointer-events: none;
 }
 
-.ransom-word {
+.flash-ransom-word {
   position: absolute;
   font-family: var(--font-rubik-glitch), system-ui;
   font-size: clamp(3rem, 12vw, 10rem);
