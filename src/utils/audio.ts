@@ -79,3 +79,31 @@ export const playPunkJingle = (pitchMultiplier: number = 1) => {
     // Ignore if audio isn't supported
   }
 };
+
+// Generic synth blip for hover interactions
+export const playSynthBlip = (freq: number = 400) => {
+  try {
+    const ctx = getAudioCtx();
+    if (!ctx) return;
+    
+    if (ctx.state === 'suspended') {
+      ctx.resume().catch(() => {});
+    }
+    if (ctx.state !== 'running') return;
+
+    const osc = ctx.createOscillator();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(freq, ctx.currentTime);
+    
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0, ctx.currentTime);
+    gain.gain.linearRampToValueAtTime(0.1, ctx.currentTime + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
+    
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    
+    osc.start();
+    osc.stop(ctx.currentTime + 0.1);
+  } catch (e) {}
+};

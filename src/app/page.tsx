@@ -1,8 +1,27 @@
 'use client';
 
 import Link from 'next/link';
+import { useEffect } from 'react';
+import { getAudioCtx, playSynthBlip } from '@/utils/audio';
 
 export default function Home() {
+
+  // Unlock AudioContext on first interaction
+  useEffect(() => {
+    const unlockAudio = () => {
+      const ctx = getAudioCtx();
+      if (ctx && ctx.state === 'suspended') {
+        ctx.resume().catch(() => {});
+      }
+    };
+    window.addEventListener('click', unlockAudio, { once: true });
+    window.addEventListener('touchstart', unlockAudio, { once: true });
+    return () => {
+      window.removeEventListener('click', unlockAudio);
+      window.removeEventListener('touchstart', unlockAudio);
+    };
+  }, []);
+
   return (
     <main className="container animate-p5-snap" style={{ alignItems: 'center', textAlign: 'center', position: 'relative' }}>
       
@@ -12,12 +31,12 @@ export default function Home() {
 
       {/* --- PUNK STICKERS --- */}
       {/* Lightning Sticker */}
-      <svg style={{ position: 'absolute', top: '8%', right: '10%', width: 'clamp(60px, 15vw, 100px)', height: 'clamp(80px, 20vw, 140px)', zIndex: 20, transform: 'rotate(15deg)', filter: 'drop-shadow(4px 4px 0 var(--accent-black))', pointerEvents: 'none' }} className="hover-bounce" viewBox="0 0 50 100" fill="var(--accent-yellow)" stroke="var(--accent-black)" strokeWidth="4" strokeLinejoin="miter">
+      <svg onMouseEnter={() => playSynthBlip(800)} style={{ position: 'absolute', top: '8%', right: '10%', width: 'clamp(60px, 15vw, 100px)', height: 'clamp(80px, 20vw, 140px)', zIndex: 20, transform: 'rotate(15deg)', filter: 'drop-shadow(4px 4px 0 var(--accent-black))', cursor: 'crosshair' }} className="hover-bounce" viewBox="0 0 50 100" fill="var(--accent-yellow)" stroke="var(--accent-black)" strokeWidth="4" strokeLinejoin="miter">
         <path d="M30 5 L5 55 L25 55 L10 95 L45 40 L25 40 Z" />
       </svg>
 
       {/* Glasses Sticker */}
-      <svg style={{ position: 'absolute', top: '45%', left: '5%', width: 'clamp(80px, 15vw, 120px)', height: 'clamp(35px, 8vw, 55px)', zIndex: 20, transform: 'rotate(-25deg)', filter: 'drop-shadow(3px 3px 0 var(--accent-red))', pointerEvents: 'none' }} className="hover-bounce" viewBox="0 0 120 50" fill="var(--accent-cyan)" stroke="var(--accent-black)" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round">
+      <svg onMouseEnter={() => playSynthBlip(600)} style={{ position: 'absolute', top: '45%', left: '5%', width: 'clamp(80px, 15vw, 120px)', height: 'clamp(35px, 8vw, 55px)', zIndex: 20, transform: 'rotate(-25deg)', filter: 'drop-shadow(3px 3px 0 var(--accent-red))', cursor: 'crosshair' }} className="hover-bounce" viewBox="0 0 120 50" fill="var(--accent-cyan)" stroke="var(--accent-black)" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round">
         <circle cx="30" cy="25" r="20" fillOpacity="0.8"/>
         <circle cx="90" cy="25" r="20" fillOpacity="0.8"/>
         <path d="M50 25 Q60 15 70 25" fill="none" /> 
@@ -26,7 +45,7 @@ export default function Home() {
       </svg>
 
       {/* Pencil Sticker */}
-      <svg style={{ position: 'absolute', bottom: '20%', right: '5%', width: 'clamp(80px, 15vw, 140px)', height: 'clamp(80px, 15vw, 140px)', zIndex: 20, transform: 'rotate(-15deg)', filter: 'drop-shadow(5px 5px 0 var(--accent-black))', pointerEvents: 'none' }} className="hover-bounce" viewBox="0 0 100 100" fill="none" stroke="var(--accent-black)" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+      <svg onMouseEnter={() => playSynthBlip(500)} style={{ position: 'absolute', bottom: '20%', right: '5%', width: 'clamp(80px, 15vw, 140px)', height: 'clamp(80px, 15vw, 140px)', zIndex: 20, transform: 'rotate(-15deg)', filter: 'drop-shadow(5px 5px 0 var(--accent-black))', cursor: 'crosshair' }} className="hover-bounce" viewBox="0 0 100 100" fill="none" stroke="var(--accent-black)" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
         <path d="M20 80 L10 90 L20 100 Z" fill="var(--accent-black)"/>
         <path d="M20 80 L80 20 L100 40 L40 100 Z" fill="var(--accent-yellow)" />
         <path d="M30 70 L90 30 M35 75 L95 35" strokeWidth="2" />
@@ -34,7 +53,7 @@ export default function Home() {
       </svg>
 
       {/* Book Sticker */}
-      <svg style={{ position: 'absolute', bottom: '5%', left: '8%', width: 'clamp(70px, 12vw, 110px)', height: 'clamp(55px, 10vw, 90px)', zIndex: 20, transform: 'rotate(25deg)', filter: 'drop-shadow(4px 4px 0 var(--accent-black))', pointerEvents: 'none' }} className="hover-bounce" viewBox="0 0 100 80" fill="var(--accent-white)" stroke="var(--accent-black)" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+      <svg onMouseEnter={() => playSynthBlip(400)} style={{ position: 'absolute', bottom: '5%', left: '8%', width: 'clamp(70px, 12vw, 110px)', height: 'clamp(55px, 10vw, 90px)', zIndex: 20, transform: 'rotate(25deg)', filter: 'drop-shadow(4px 4px 0 var(--accent-black))', cursor: 'crosshair' }} className="hover-bounce" viewBox="0 0 100 80" fill="var(--accent-white)" stroke="var(--accent-black)" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
         <path d="M50 70 V15 C50 15 35 5 10 10 V65 C35 60 50 70 50 70 Z" />
         <path d="M50 70 V15 C50 15 65 5 90 10 V65 C65 60 50 70 50 70 Z" />
         <path d="M15 20 C30 15 45 22 45 22" fill="none" stroke="var(--accent-red)"/>
@@ -51,25 +70,25 @@ export default function Home() {
       <div style={{ marginBottom: 'clamp(1rem, 3vh, 2rem)', position: 'relative', zIndex: 10 }}>
         {/* Ransom Note Title */}
         <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center', gap: '5px', marginBottom: '10px' }}>
-          <span className="ransom-word halftone-yellow" style={{ fontSize: 'clamp(3rem, 10vw, 5rem)', transform: 'rotate(-5deg)' }}>R</span>
-          <span className="ransom-word" style={{ fontSize: 'clamp(3rem, 10vw, 5rem)', transform: 'rotate(2deg)', background: 'var(--accent-white)' }}>E</span>
-          <span className="ransom-word" style={{ fontSize: 'clamp(3rem, 10vw, 5rem)', transform: 'rotate(-8deg)', background: 'var(--accent-red)', color: 'var(--accent-white)' }}>A</span>
-          <span className="ransom-word" style={{ fontSize: 'clamp(3rem, 10vw, 5rem)', transform: 'rotate(5deg)', background: 'var(--accent-black)', color: 'var(--accent-yellow)' }}>D</span>
-          <span className="ransom-word" style={{ fontSize: 'clamp(3rem, 10vw, 5rem)', transform: 'rotate(-2deg)', background: 'var(--accent-white)' }}>E</span>
-          <span className="ransom-word" style={{ fontSize: 'clamp(3rem, 10vw, 5rem)', transform: 'rotate(10deg)', background: 'var(--accent-cyan)' }}>R</span>
+          <span onMouseEnter={() => playSynthBlip(300)} className="ransom-word halftone-yellow" style={{ fontSize: 'clamp(3rem, 10vw, 5rem)', transform: 'rotate(-5deg)', cursor: 'crosshair' }}>R</span>
+          <span onMouseEnter={() => playSynthBlip(350)} className="ransom-word" style={{ fontSize: 'clamp(3rem, 10vw, 5rem)', transform: 'rotate(2deg)', background: 'var(--accent-white)', cursor: 'crosshair' }}>E</span>
+          <span onMouseEnter={() => playSynthBlip(400)} className="ransom-word" style={{ fontSize: 'clamp(3rem, 10vw, 5rem)', transform: 'rotate(-8deg)', background: 'var(--accent-red)', color: 'var(--accent-white)', cursor: 'crosshair' }}>A</span>
+          <span onMouseEnter={() => playSynthBlip(450)} className="ransom-word" style={{ fontSize: 'clamp(3rem, 10vw, 5rem)', transform: 'rotate(5deg)', background: 'var(--accent-black)', color: 'var(--accent-yellow)', cursor: 'crosshair' }}>D</span>
+          <span onMouseEnter={() => playSynthBlip(500)} className="ransom-word" style={{ fontSize: 'clamp(3rem, 10vw, 5rem)', transform: 'rotate(-2deg)', background: 'var(--accent-white)', cursor: 'crosshair' }}>E</span>
+          <span onMouseEnter={() => playSynthBlip(550)} className="ransom-word" style={{ fontSize: 'clamp(3rem, 10vw, 5rem)', transform: 'rotate(10deg)', background: 'var(--accent-cyan)', cursor: 'crosshair' }}>R</span>
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center', gap: '5px' }}>
-          <span className="ransom-word" style={{ fontSize: 'clamp(4rem, 15vw, 7rem)', transform: 'rotate(-4deg)', background: 'var(--accent-black)', color: 'var(--accent-green)' }}>D</span>
-          <span className="ransom-word" style={{ fontSize: 'clamp(4rem, 15vw, 7rem)', transform: 'rotate(6deg)', background: 'var(--accent-red)', color: 'var(--accent-black)' }}>N</span>
-          <span className="ransom-word halftone-yellow" style={{ fontSize: 'clamp(4rem, 15vw, 7rem)', transform: 'rotate(-2deg)' }}>A</span>
+          <span onMouseEnter={() => playSynthBlip(300)} className="ransom-word" style={{ fontSize: 'clamp(4rem, 15vw, 7rem)', transform: 'rotate(-4deg)', background: 'var(--accent-black)', color: 'var(--accent-green)', cursor: 'crosshair' }}>D</span>
+          <span onMouseEnter={() => playSynthBlip(350)} className="ransom-word" style={{ fontSize: 'clamp(4rem, 15vw, 7rem)', transform: 'rotate(6deg)', background: 'var(--accent-red)', color: 'var(--accent-black)', cursor: 'crosshair' }}>N</span>
+          <span onMouseEnter={() => playSynthBlip(400)} className="ransom-word halftone-yellow" style={{ fontSize: 'clamp(4rem, 15vw, 7rem)', transform: 'rotate(-2deg)', cursor: 'crosshair' }}>A</span>
         </div>
         
         <div style={{ position: 'relative', display: 'inline-block' }}>
           {/* Highlight Scribble */}
-          <svg style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%) rotate(-1deg)', width: '110%', height: '120%', zIndex: -1, opacity: 0.8, pointerEvents: 'none' }} viewBox="0 0 200 60" preserveAspectRatio="none" fill="none" stroke="var(--accent-yellow)" strokeWidth="12" strokeLinecap="round" strokeLinejoin="miter">
+          <svg style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%) rotate(-1deg)', width: '110%', height: '120%', zIndex: -1, opacity: 0.8 }} viewBox="0 0 200 60" preserveAspectRatio="none" fill="none" stroke="var(--accent-yellow)" strokeWidth="12" strokeLinecap="round" strokeLinejoin="miter">
             <path d="M 10 30 Q 50 10 100 40 T 190 20 M 15 45 Q 80 20 180 45" />
           </svg>
-          <h2 style={{ fontSize: 'clamp(1.25rem, 4vw, 2rem)', color: 'var(--accent-black)', background: 'var(--accent-white)', display: 'inline-block', padding: '8px 16px', clipPath: 'polygon(2% 1%, 98% 3%, 99% 98%, 1% 97%)', marginTop: '12px', border: '3px solid var(--accent-black)', transform: 'rotate(2deg)', boxShadow: '5px 5px 0 var(--accent-red)' }}>
+          <h2 onMouseEnter={() => playSynthBlip(1000)} style={{ fontSize: 'clamp(1.25rem, 4vw, 2rem)', color: 'var(--accent-black)', background: 'var(--accent-white)', display: 'inline-block', padding: '8px 16px', clipPath: 'polygon(2% 1%, 98% 3%, 99% 98%, 1% 97%)', marginTop: '12px', border: '3px solid var(--accent-black)', transform: 'rotate(2deg)', boxShadow: '5px 5px 0 var(--accent-red)', cursor: 'crosshair' }}>
             คุณเป็นนักอ่านแบบไหน?
           </h2>
         </div>

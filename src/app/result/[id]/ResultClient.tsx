@@ -145,7 +145,7 @@ export default function ResultClient({ archetype }: { archetype: any }) {
                 }}
                 onMouseLeave={() => setIsHoveringRansom(false)}
               >
-                {(isHoveringRansom ? "SUNDAY BOOK CLUB" : archetype.english_name.toUpperCase()).split('').map((char: string, i: number) => {
+                {(isHoveringRansom ? "SUNDAY BOOK CLUB" : archetype.english_name.toUpperCase().padEnd(16, '*')).split('').map((char: string, i: number) => {
                   if (char === ' ') return <div key={i} style={{ width: '20px' }} />;
                   
                   let delay = '0s';
