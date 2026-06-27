@@ -11,6 +11,7 @@ export default function ResultClient({ archetype }: { archetype: any }) {
   const [mounted, setMounted] = useState(false);
   const [isCapturing, setIsCapturing] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
+  const [generatedImage, setGeneratedImage] = useState<string | null>(null);
   const resultRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -35,7 +36,8 @@ export default function ResultClient({ archetype }: { archetype: any }) {
   }));
 
   const handleRetake = () => {
-    resetQuiz();
+    // We don't call resetQuiz() here to prevent layout shifts. 
+    // It will be handled when they start a new quiz on the home page.
     router.push('/');
   };
 
@@ -46,44 +48,25 @@ export default function ResultClient({ archetype }: { archetype: any }) {
     
     if (resultRef.current) {
       try {
-        // Wait for React to render the watermark
         await new Promise(resolve => setTimeout(resolve, 150));
-        
         const { toPng } = await import('html-to-image');
         
         const dataUrl = await toPng(resultRef.current, { 
           pixelRatio: 2,
         });
         
-        // Try Native Share first (works on iOS/Android for files if supported)
-        if (navigator.share) {
-          try {
-            const res = await fetch(dataUrl);
-            const blob = await res.blob();
-            const file = new File([blob], `reader-dna-${archetype.id}.png`, { type: 'image/png' });
-            // Some browsers require testing if sharing files is supported
-            if (navigator.canShare && navigator.canShare({ files: [file] })) {
-              await navigator.share({
-                title: 'My Reader DNA',
-                files: [file]
-              });
-              return; // Success!
-            }
-          } catch (shareError: any) {
-            if (shareError.name !== 'AbortError') {
-              console.log('Error sharing:', shareError);
-            }
-            // If user aborted or error happened, we don't necessarily want to fallback to download
-            // but for safety, we can just return.
-            return;
-          }
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        
+        if (isMobile) {
+          // On mobile, show the image in a modal for the user to long-press and save
+          setGeneratedImage(dataUrl);
+        } else {
+          // On desktop, auto-download
+          const link = document.createElement('a');
+          link.download = `reader-dna-${archetype.id}.png`;
+          link.href = dataUrl;
+          link.click();
         }
-
-        // Fallback for desktop or unsupported mobile
-        const link = document.createElement('a');
-        link.download = `reader-dna-${archetype.id}.png`;
-        link.href = dataUrl;
-        link.click();
       } catch (err) {
         console.error('Failed to generate PNG', err);
         alert('Failed to save image. Please try again.');
@@ -223,6 +206,46 @@ export default function ResultClient({ archetype }: { archetype: any }) {
           
         </div>
       </div>
+
+      {/* MOBILE SAVE IMAGE MODAL */}
+      {generatedImage && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.85)',
+          zIndex: 9999,
+          display: 'flex', flexDirection: 'column',
+          alignItems: 'center', justifyContent: 'center',
+          padding: '20px'
+        }}>
+          <div style={{
+            background: 'var(--accent-white)',
+            border: '4px solid var(--accent-black)',
+            padding: '16px',
+            maxWidth: '100%',
+            maxHeight: '80vh',
+            display: 'flex', flexDirection: 'column',
+            alignItems: 'center',
+            boxShadow: '8px 8px 0 var(--accent-cyan)',
+            transform: 'rotate(1deg)'
+          }}>
+            <h3 className="p5-text-bg-black" style={{ marginBottom: '16px', fontSize: '18px', textAlign: 'center' }}>
+              แตะค้างที่รูปเพื่อบันทึก
+            </h3>
+            <img 
+              src={generatedImage} 
+              alt="Your Reader DNA" 
+              style={{ width: '100%', objectFit: 'contain', maxHeight: '50vh', border: '2px solid black' }} 
+            />
+            <button 
+              className="p5-button hover-glitch" 
+              onClick={() => setGeneratedImage(null)}
+              style={{ marginTop: '20px', padding: '10px 30px' }}
+            >
+              ปิดหน้าต่าง
+            </button>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

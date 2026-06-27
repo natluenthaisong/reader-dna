@@ -57,7 +57,10 @@ export default function Home() {
           </div>
         </div>
 
-        <Link href="/quiz" passHref style={{ display: 'block' }}>
+        <Link href="/quiz" passHref style={{ display: 'block' }} onClick={() => {
+          // Clear state when explicitly starting a new quiz
+          import('@/store/useQuizStore').then(mod => mod.useQuizStore.getState().resetQuiz());
+        }}>
           <button className="p5-button inverted hover-glitch" style={{ width: '100%', fontSize: 'clamp(1.5rem, 5vw, 2.5rem)', padding: '1rem', transform: 'rotate(1deg)' }}>
             เริ่มตรวจนิสัยนักอ่าน!
           </button>
