@@ -532,10 +532,16 @@ export default function QuizPage() {
             whiteSpace: 'nowrap',
             cursor: isTransitioning ? 'default' : (isDraggingQ ? 'grabbing' : 'grab'),
             pointerEvents: isTransitioning ? 'none' : 'auto',
-            touchAction: 'none'
+            touchAction: 'none',
+            userSelect: 'none',
+            WebkitUserSelect: 'none'
           }}
         >
-          Q.{currentQuestionIndex + 1}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span style={{ fontSize: '0.8em', opacity: 0.6 }}>◄</span>
+            Q.{currentQuestionIndex + 1}
+            <span style={{ fontSize: '0.8em', opacity: 0.6 }}>►</span>
+          </div>
         </div>
         
         <div style={{ width: '100%', height: '15px', background: 'var(--accent-black)', clipPath: 'polygon(1% 10%, 99% 0, 100% 90%, 0% 100%)', position: 'relative' }}>
