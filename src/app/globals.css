@@ -378,7 +378,7 @@ a {
 /* Punk Portrait Cutout */
 .punk-portrait-wrapper {
   position: absolute;
-  bottom: -5%;
+  top: 25%;
   right: -5%;
   width: clamp(150px, 25vw, 350px);
   height: clamp(200px, 35vw, 450px);
