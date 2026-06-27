@@ -5,6 +5,50 @@ import { useRouter } from 'next/navigation';
 import { useQuizStore } from '@/store/useQuizStore';
 import questionsData from '../../../content/questions.json';
 
+// Global AudioContext to prevent hitting hardware limits (Max 6 contexts in Chrome)
+let globalAudioCtx: any = null;
+const getAudioCtx = () => {
+  if (typeof window === 'undefined') return null;
+  try {
+    if (!globalAudioCtx) {
+      const AudioContext = (window as any).AudioContext || (window as any).webkitAudioContext;
+      if (AudioContext) {
+        globalAudioCtx = new AudioContext();
+      }
+    }
+    // Attempt to resume if suspended by autoplay policy
+    if (globalAudioCtx && globalAudioCtx.state === 'suspended') {
+      globalAudioCtx.resume();
+    }
+    return globalAudioCtx;
+  } catch (e) {
+    return null;
+  }
+};
+
+const playTypewriterSound = () => {
+  try {
+    const ctx = getAudioCtx();
+    if (!ctx || ctx.state === 'suspended') return;
+    
+    // High-pitched, slightly distorted mechanical "clack"
+    const osc = ctx.createOscillator();
+    osc.type = 'square';
+    // Random high pitch between 1200Hz and 1800Hz for a chaotic punk feel
+    osc.frequency.setValueAtTime(1200 + Math.random() * 600, ctx.currentTime); 
+    
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.03, ctx.currentTime); // Keep it quiet so it doesn't pierce ears
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.04);
+    
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    
+    osc.start();
+    osc.stop(ctx.currentTime + 0.05);
+  } catch (e) {}
+};
+
 const TypewriterText = ({ text, id }: { text: string, id: string }) => {
   const [displayedText, setDisplayedText] = useState('');
   const [isTyping, setIsTyping] = useState(true);
@@ -16,6 +60,8 @@ const TypewriterText = ({ text, id }: { text: string, id: string }) => {
     const interval = setInterval(() => {
       if (i < text.length) {
         setDisplayedText(text.slice(0, i + 1));
+        // Play sound every other character to keep it punchy but not overwhelming
+        if (i % 2 === 0) playTypewriterSound();
         i++;
       } else {
         setIsTyping(false);
@@ -42,26 +88,7 @@ const TypewriterText = ({ text, id }: { text: string, id: string }) => {
   );
 };
 
-// Global AudioContext to prevent hitting hardware limits (Max 6 contexts in Chrome)
-let globalAudioCtx: any = null;
-const getAudioCtx = () => {
-  if (typeof window === 'undefined') return null;
-  try {
-    if (!globalAudioCtx) {
-      const AudioContext = (window as any).AudioContext || (window as any).webkitAudioContext;
-      if (AudioContext) {
-        globalAudioCtx = new AudioContext();
-      }
-    }
-    // Attempt to resume if suspended by autoplay policy
-    if (globalAudioCtx && globalAudioCtx.state === 'suspended') {
-      globalAudioCtx.resume();
-    }
-    return globalAudioCtx;
-  } catch (e) {
-    return null;
-  }
-};
+
 
 export default function QuizPage() {
   const router = useRouter();
