@@ -496,7 +496,7 @@ export default function QuizPage() {
                   prevQuestion();
                 }
                 setRocketClass(null);
-              }, 700);
+              }, 1200);
             }
           }} 
           disabled={isTransitioning || rocketClass !== null}
