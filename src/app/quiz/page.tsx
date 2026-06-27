@@ -436,7 +436,7 @@ export default function QuizPage() {
       setTimeout(() => {
         nextQuestion();
         setIsTransitioning(false);
-      }, 150); // Snap faster
+      }, 0); // Snap immediately
     } else {
       setIsSubmitting(true);
       setErrorMsg(null);
@@ -756,6 +756,31 @@ export default function QuizPage() {
                   
                   {/* Random tape on selected item to look chaotic */}
                   {isSelected && <div className="tape" style={{ top: '-10px', right: '-10px', width: '50px', height: '20px', transform: 'rotate(20deg)', zIndex: 2 }}></div>}
+                  
+                  {/* SELECTED Stamp */}
+                  {isSelected && (
+                    <div style={{
+                      position: 'absolute',
+                      top: '50%',
+                      left: '50%',
+                      transform: 'translate(-50%, -50%) rotate(-10deg)',
+                      color: 'var(--accent-red)',
+                      border: '4px solid var(--accent-red)',
+                      padding: '4px 12px',
+                      fontSize: '1.5rem',
+                      fontWeight: 900,
+                      textTransform: 'uppercase',
+                      letterSpacing: '2px',
+                      zIndex: 10,
+                      pointerEvents: 'none',
+                      boxShadow: '0 0 10px rgba(230,0,0,0.3)',
+                      textShadow: '1px 1px 0 var(--accent-black)',
+                      opacity: 0.9,
+                      background: 'rgba(0,0,0,0.6)'
+                    }}>
+                      SELECTED
+                    </div>
+                  )}
                 </button>
               </div>
             );
