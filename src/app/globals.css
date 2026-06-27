@@ -456,14 +456,14 @@ a {
   white-space: nowrap;
 }
 
-.word-1 { animation: flash-word 0.25s 0s forwards; transform: rotate(-5deg); background: var(--accent-yellow); }
-.word-2 { animation: flash-word 0.25s 0.25s forwards; transform: rotate(8deg) scale(1.2); background: var(--accent-red); color: white; }
-.word-3 { animation: flash-word 0.25s 0.5s forwards; transform: rotate(-10deg) scale(0.9); background: var(--accent-white); }
-.word-4 { animation: flash-word 0.8s 0.75s forwards; transform: rotate(5deg) scale(1.5); background: var(--accent-black); color: var(--accent-yellow); box-shadow: 10px 10px 0 var(--accent-white); }
+.word-1 { animation: flash-word 1.5s 0s forwards; background: var(--accent-yellow); --base-t: translate(-15vw, -15vh) rotate(-5deg) scale(1); --end-t: translate(-15vw, -15vh) rotate(-5deg) scale(1.1); }
+.word-2 { animation: flash-word 1.5s 0.25s forwards; background: var(--accent-red); color: white; --base-t: translate(15vw, -5vh) rotate(8deg) scale(1.2); --end-t: translate(15vw, -5vh) rotate(8deg) scale(1.3); }
+.word-3 { animation: flash-word 1.5s 0.5s forwards; background: var(--accent-white); --base-t: translate(-10vw, 15vh) rotate(-10deg) scale(0.9); --end-t: translate(-10vw, 15vh) rotate(-10deg) scale(1); }
+.word-4 { animation: flash-word 1.5s 0.75s forwards; background: var(--accent-black); color: var(--accent-yellow); box-shadow: 10px 10px 0 var(--accent-white); --base-t: translate(10vw, 10vh) rotate(5deg) scale(1.5); --end-t: translate(10vw, 10vh) rotate(5deg) scale(1.6); }
 
 @keyframes flash-word {
   0% { opacity: 0; transform: scale(3) rotate(0deg); }
-  10% { opacity: 1; transform: scale(1) rotate(var(--base-rotate, 0deg)); }
-  90% { opacity: 1; transform: scale(1.1) rotate(var(--base-rotate, 0deg)); }
-  100% { opacity: 0; transform: scale(0.5) rotate(var(--base-rotate, 0deg)); }
+  10% { opacity: 1; transform: var(--base-t); }
+  90% { opacity: 1; transform: var(--end-t); }
+  100% { opacity: 0; transform: scale(0.5); }
 }

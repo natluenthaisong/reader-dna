@@ -474,10 +474,10 @@ export default function QuizPage() {
         {/* Flash Ransom Note Overlay */}
         {isSubmitting && !errorMsg && (
           <div className="ransom-flash-overlay">
-            <span className="ransom-word word-1" style={{'--base-rotate': '-5deg'} as any}>SUN</span>
-            <span className="ransom-word word-2" style={{'--base-rotate': '8deg'} as any}>DAY</span>
-            <span className="ransom-word word-3" style={{'--base-rotate': '-10deg'} as any}>BOOK</span>
-            <span className="ransom-word word-4" style={{'--base-rotate': '5deg'} as any}>CLUB</span>
+            <span className="ransom-word word-1">SUN</span>
+            <span className="ransom-word word-2">DAY</span>
+            <span className="ransom-word word-3">BOOK</span>
+            <span className="ransom-word word-4">CLUB</span>
           </div>
         )}
 
