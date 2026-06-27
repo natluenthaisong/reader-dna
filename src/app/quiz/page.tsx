@@ -492,7 +492,7 @@ export default function QuizPage() {
         {/* Punk Portrait Cutout (Dynamically loaded based on question) */}
         <div className="punk-portrait-wrapper" style={{ transform: currentQuestionIndex % 2 === 0 ? 'rotate(3deg)' : 'rotate(-3deg)' }}>
           <img 
-            src={`/authors/${currentQuestionIndex + 1}.png`} 
+            src={`/authors/${currentQuestionIndex + 1}.jpg`} 
             alt="" 
             onError={(e) => { e.currentTarget.style.display = 'none'; }}
             onLoad={(e) => { e.currentTarget.style.display = 'block'; }}
