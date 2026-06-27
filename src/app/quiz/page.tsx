@@ -413,7 +413,7 @@ export default function QuizPage() {
       setTimeout(() => {
         nextQuestion();
         setIsTransitioning(false);
-      }, 0); // Snap immediately
+      }, 400); // Wait for stamp animation
     } else {
       setIsSubmitting(true);
       setErrorMsg(null);
@@ -751,8 +751,9 @@ export default function QuizPage() {
                       pointerEvents: 'none',
                       boxShadow: '0 0 10px rgba(230,0,0,0.3)',
                       textShadow: '1px 1px 0 var(--accent-black)',
-                      opacity: 0.9,
-                      background: 'rgba(0,0,0,0.6)'
+                      opacity: 0, // Starts at 0, filled by animation
+                      background: 'rgba(0,0,0,0.6)',
+                      animation: 'stamp-pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards'
                     }}>
                       SELECTED
                     </div>
