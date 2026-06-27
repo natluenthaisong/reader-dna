@@ -609,7 +609,6 @@ export default function QuizPage() {
                 }}
                 disabled={!canClick}
                 title={canClick ? `กลับไปข้อ ${idx + 1}` : undefined}
-                className={canClick ? "hover-glitch" : ""}
                 style={{
                   position: 'absolute',
                   top: '50%',
