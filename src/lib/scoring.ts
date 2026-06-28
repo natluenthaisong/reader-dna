@@ -1,3 +1,16 @@
+import type {
+  Answer,
+  Question,
+  ScoringConfig,
+  CalculateConfidenceParams,
+  ConfidenceResult,
+  DerivedScores,
+  ShareHighlight,
+  ScoringResult,
+  QuestionsData,
+  ScoreQuizParams,
+} from '@/types/index';
+
 export const DEFAULT_SCORE_LABELS: Record<string, string> = {
   book_hoarding_risk: 'ความเสี่ยงกองดองงอก',
   finish_probability: 'โอกาสอ่านจบ',
@@ -26,17 +39,16 @@ function mapById<T extends { id: string }>(items: T[]): Map<string, T> {
   return out;
 }
 
-interface Answer {
-  question_id: string;
-  value: number;
+interface ScoringError extends Error {
+  code: string;
+  details?: { missing_question_ids: string[] };
 }
 
-interface Question {
-  id: string;
-  active?: boolean;
-  reverse?: boolean;
-  weight?: number;
-  pole: string;
+function makeScoringError(message: string, code: string, details?: { missing_question_ids: string[] }): ScoringError {
+  const err = new Error(message) as ScoringError;
+  err.code = code;
+  if (details) err.details = details;
+  return err;
 }
 
 export function validateAnswers(
@@ -44,55 +56,40 @@ export function validateAnswers(
   questions: Question[],
   expectedQuestionVersion: string,
   suppliedQuestionVersion: string
-) {
+): void {
   if (suppliedQuestionVersion !== expectedQuestionVersion) {
-    const err: any = new Error('question_version is not supported by this scoring version.');
-    err.code = 'QUESTION_VERSION_UNSUPPORTED';
-    throw err;
+    throw makeScoringError('question_version is not supported by this scoring version.', 'QUESTION_VERSION_UNSUPPORTED');
   }
 
   const activeQuestions = questions.filter((q) => q.active !== false);
   const questionMap = mapById(activeQuestions);
 
   if (!Array.isArray(answers) || answers.length !== activeQuestions.length) {
-    const err: any = new Error(`Answers must include all ${activeQuestions.length} active questions.`);
-    err.code = 'INVALID_ANSWERS';
-    throw err;
+    throw makeScoringError(`Answers must include all ${activeQuestions.length} active questions.`, 'INVALID_ANSWERS');
   }
 
   const seen = new Set<string>();
   for (const answer of answers) {
     if (!answer || typeof answer.question_id !== 'string') {
-      const err: any = new Error('Each answer must include question_id.');
-      err.code = 'INVALID_ANSWERS';
-      throw err;
+      throw makeScoringError('Each answer must include question_id.', 'INVALID_ANSWERS');
     }
     if (seen.has(answer.question_id)) {
-      const err: any = new Error(`Duplicate question_id: ${answer.question_id}`);
-      err.code = 'INVALID_ANSWERS';
-      throw err;
+      throw makeScoringError(`Duplicate question_id: ${answer.question_id}`, 'INVALID_ANSWERS');
     }
     seen.add(answer.question_id);
 
     if (!questionMap.has(answer.question_id)) {
-      const err: any = new Error(`Unknown question_id: ${answer.question_id}`);
-      err.code = 'INVALID_ANSWERS';
-      throw err;
+      throw makeScoringError(`Unknown question_id: ${answer.question_id}`, 'INVALID_ANSWERS');
     }
 
     if (!Number.isInteger(answer.value) || answer.value < 1 || answer.value > 5) {
-      const err: any = new Error(`Answer value must be an integer from 1 to 5: ${answer.question_id}`);
-      err.code = 'INVALID_ANSWERS';
-      throw err;
+      throw makeScoringError(`Answer value must be an integer from 1 to 5: ${answer.question_id}`, 'INVALID_ANSWERS');
     }
   }
 
   const missing = activeQuestions.map((q) => q.id).filter((id) => !seen.has(id));
   if (missing.length > 0) {
-    const err: any = new Error('Answers must include all active questions.');
-    err.code = 'INVALID_ANSWERS';
-    err.details = { missing_question_ids: missing };
-    throw err;
+    throw makeScoringError('Answers must include all active questions.', 'INVALID_ANSWERS', { missing_question_ids: missing });
   }
 }
 
@@ -102,7 +99,10 @@ function buildAnswerMap(answers: Answer[]): Map<string, number> {
   return out;
 }
 
-export function calculatePoleScores(answers: Answer[], questions: Question[]) {
+export function calculatePoleScores(
+  answers: Answer[],
+  questions: Question[]
+): { poleScores: Record<string, number>; poleRaw: Record<string, { score: number; weight: number; count: number; values: number[] }> } {
   const answerMap = buildAnswerMap(answers);
   const poleRaw: Record<string, { score: number; weight: number; count: number; values: number[] }> = {};
 
@@ -129,7 +129,7 @@ export function calculatePoleScores(answers: Answer[], questions: Question[]) {
   return { poleScores, poleRaw };
 }
 
-export function calculateAxisScores(poleScores: Record<string, number>) {
+export function calculateAxisScores(poleScores: Record<string, number>): Record<string, number> {
   return {
     motivation: poleScores.growth - poleScores.escape,
     breadth: poleScores.broad - poleScores.deep,
@@ -140,7 +140,11 @@ export function calculateAxisScores(poleScores: Record<string, number>) {
   };
 }
 
-export function weightedDistance(userVector: Record<string, number>, archetypeVector: Record<string, number>, weights: Record<string, number>) {
+export function weightedDistance(
+  userVector: Record<string, number>,
+  archetypeVector: Record<string, number>,
+  weights: Record<string, number>
+): number {
   let total = 0;
   for (const axis of Object.keys(weights)) {
     const diff = userVector[axis] - archetypeVector[axis];
@@ -149,13 +153,17 @@ export function weightedDistance(userVector: Record<string, number>, archetypeVe
   return Math.sqrt(total);
 }
 
-function rankArchetypes(axisScores: Record<string, number>, archetypeVectors: Record<string, Record<string, number>>, weights: Record<string, number>) {
+function rankArchetypes(
+  axisScores: Record<string, number>,
+  archetypeVectors: Record<string, Record<string, number>>,
+  weights: Record<string, number>
+): Array<{ id: string; distance: number }> {
   return Object.entries(archetypeVectors)
     .map(([id, vector]) => ({ id, distance: weightedDistance(axisScores, vector, weights) }))
     .sort((a, b) => a.distance - b.distance || a.id.localeCompare(b.id));
 }
 
-function calculateConsistency(poleRaw: Record<string, { values: number[] }>) {
+function calculateConsistency(poleRaw: Record<string, { values: number[] }>): number {
   const consistencies: number[] = [];
   for (const raw of Object.values(poleRaw)) {
     if (raw.values.length < 2) continue;
@@ -167,7 +175,13 @@ function calculateConsistency(poleRaw: Record<string, { values: number[] }>) {
   return consistencies.reduce((sum, v) => sum + v, 0) / consistencies.length;
 }
 
-function calculateConfidence({ primaryDistance, secondaryDistance, poleRaw, axisScores, config }: any) {
+function calculateConfidence({
+  primaryDistance,
+  secondaryDistance,
+  poleRaw,
+  axisScores,
+  config,
+}: CalculateConfidenceParams): ConfidenceResult {
   const confidenceConfig = config.confidence;
   const distanceConfidence = 1 - Math.min(primaryDistance / confidenceConfig.distance_divisor, 1);
   const gap = secondaryDistance - primaryDistance;
@@ -179,9 +193,8 @@ function calculateConfidence({ primaryDistance, secondaryDistance, poleRaw, axis
     confidenceConfig.weights.gap * gapConfidence +
     confidenceConfig.weights.consistency * consistencyConfidence;
 
-  const axisStrength =
-    Object.values(axisScores as Record<string, number>).reduce((sum, value) => sum + Math.abs(value), 0) /
-    Object.values(axisScores as Record<string, number>).length;
+  const axisValues = Object.values(axisScores);
+  const axisStrength = axisValues.reduce((sum, value) => sum + Math.abs(value), 0) / axisValues.length;
   const flatness = confidenceConfig.axis_flatness_penalty;
   if (axisStrength < flatness.axis_strength_lt) {
     score *= flatness.multiplier;
@@ -192,7 +205,7 @@ function calculateConfidence({ primaryDistance, secondaryDistance, poleRaw, axis
   }
 
   score = Math.max(0, Math.min(1, score));
-  let label = 'low';
+  let label: 'high' | 'medium' | 'low' = 'low';
   if (score >= confidenceConfig.labels.high_min) label = 'high';
   else if (score >= confidenceConfig.labels.medium_min) label = 'medium';
 
@@ -209,7 +222,7 @@ function calculateConfidence({ primaryDistance, secondaryDistance, poleRaw, axis
   };
 }
 
-export function calculateDerivedScores(poleScores: Record<string, number>) {
+export function calculateDerivedScores(poleScores: Record<string, number>): DerivedScores {
   const growth = poleScores.growth;
   const escape = poleScores.escape;
   const broad = poleScores.broad;
@@ -232,8 +245,13 @@ export function calculateDerivedScores(poleScores: Record<string, number>) {
   };
 }
 
-export function selectShareHighlights(primaryType: string, derivedScores: Record<string, number>, config: any, scoreLabels = DEFAULT_SCORE_LABELS) {
-  const entries = Object.entries(derivedScores).map(([key, value]) => ({ key, value }));
+export function selectShareHighlights(
+  primaryType: string,
+  derivedScores: DerivedScores,
+  config: ScoringConfig,
+  scoreLabels = DEFAULT_SCORE_LABELS
+): ShareHighlight[] {
+  const entries = (Object.entries(derivedScores) as [string, number][]).map(([key, value]) => ({ key, value }));
   const priority = [
     'book_hoarding_risk',
     'finish_probability',
@@ -268,9 +286,9 @@ export function selectShareHighlights(primaryType: string, derivedScores: Record
   }));
 }
 
-export function scoreQuiz({ answers, questionsData, scoringConfig, questionVersion }: any) {
-  const questions = questionsData.questions || questionsData;
-  const expectedQuestionVersion = scoringConfig.question_version || questionsData.question_version;
+export function scoreQuiz({ answers, questionsData, scoringConfig, questionVersion }: ScoreQuizParams): ScoringResult {
+  const questions = (questionsData as QuestionsData & { questions?: Question[] }).questions || (questionsData as unknown as Question[]);
+  const expectedQuestionVersion = scoringConfig.question_version || (questionsData as QuestionsData).question_version;
   validateAnswers(answers, questions, expectedQuestionVersion, questionVersion);
 
   const { poleScores, poleRaw } = calculatePoleScores(answers, questions);
@@ -298,7 +316,7 @@ export function scoreQuiz({ answers, questionsData, scoringConfig, questionVersi
     secondary_type: secondaryType,
     confidence,
     pole_scores: Object.fromEntries(Object.entries(poleScores).map(([k, v]) => [k, Number(v.toFixed(2))])),
-    axis_scores: Object.fromEntries(Object.entries(axisScores).map(([k, v]) => [k, Number(v.toFixed(2))])),
+    axis_scores: axisScores as ReturnType<typeof calculateAxisScores> as import('@/types/index').AxisScores,
     distances: Object.fromEntries(ranked.map((item) => [item.id, Number(item.distance.toFixed(4))])),
     derived_scores: derivedScores,
     share_highlights: shareHighlights,
