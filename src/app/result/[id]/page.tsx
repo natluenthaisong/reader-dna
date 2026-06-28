@@ -28,5 +28,5 @@ export default async function ResultPage({ params }: Props) {
   const id = resolvedParams.id;
   const archetype = archetypesData.archetypes.find((a) => a.id === id);
 
-  return <ResultClient archetype={archetype} />;
+  return <ResultClient archetype={archetype ?? null} />;
 }

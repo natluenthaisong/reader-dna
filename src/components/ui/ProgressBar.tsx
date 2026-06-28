@@ -45,19 +45,44 @@ export function ProgressBar({ totalQuestions, isTransitioning }: ProgressBarProp
     e.currentTarget.releasePointerCapture(e.pointerId);
   };
 
+  const handleMarkerKeyDown = (e: React.KeyboardEvent) => {
+    if (isTransitioning) return;
+    let target = currentQuestionIndex;
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') target = currentQuestionIndex - 1;
+    else if (e.key === 'ArrowRight' || e.key === 'ArrowUp') target = currentQuestionIndex + 1;
+    else if (e.key === 'Home') target = 0;
+    else if (e.key === 'End') target = maxUnlockedIndex;
+    else return;
+
+    e.preventDefault();
+    const clamped = Math.max(0, Math.min(target, maxUnlockedIndex));
+    if (clamped !== currentQuestionIndex) {
+      playClickSound(-1);
+      jumpToQuestion(clamped);
+    }
+  };
+
   return (
     <div 
       ref={progressBarRef}
       style={{ position: 'relative', width: '100%', marginBottom: 'clamp(2rem, 5vh, 3rem)' }}
     >
-      {/* Dynamic Q.n Marker */}
-      <div 
-        className="p5-text-bg-black" 
+      {/* Dynamic Q.n Marker — also a keyboard-operable slider */}
+      <div
+        className="p5-text-bg-black"
+        role="slider"
+        tabIndex={isTransitioning ? -1 : 0}
+        aria-label="เลื่อนเพื่อย้อนกลับไปข้อที่ตอบแล้ว"
+        aria-valuemin={1}
+        aria-valuemax={totalQuestions}
+        aria-valuenow={currentQuestionIndex + 1}
+        aria-valuetext={`ข้อ ${currentQuestionIndex + 1} จาก ${totalQuestions}`}
+        onKeyDown={handleMarkerKeyDown}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
-        style={{ 
+        style={{
           position: 'absolute', 
           top: '-35px', 
           left: `${progress}%`,
@@ -99,7 +124,11 @@ export function ProgressBar({ totalQuestions, isTransitioning }: ProgressBarProp
           if (!isUnlocked) return null;
           
           const canClick = isUnlocked && !isTransitioning;
-          
+          // Hit area width = exactly one step's slot so neighbouring targets never overlap,
+          // capped at 44px so wide screens don't create oversized targets. Height is a fixed
+          // 44px (vertical never overlaps), giving an accessible tap target for a tiny notch.
+          const slotPercent = 100 / (totalQuestions - 1);
+
           return (
             <button
               key={idx}
@@ -115,19 +144,37 @@ export function ProgressBar({ totalQuestions, isTransitioning }: ProgressBarProp
                 position: 'absolute',
                 top: '50%',
                 left: `${(idx / (totalQuestions - 1)) * 100}%`,
-                transform: isCurrent ? 'translate(-50%, -50%) skewX(-10deg) scale(1.2)' : 'translate(-50%, -50%) skewX(-10deg)',
-                width: isCurrent ? '24px' : '16px',
-                height: isCurrent ? '36px' : '24px', // Taller to look like notches/steppers
-                backgroundColor: isCurrent ? 'var(--accent-yellow)' : 'var(--accent-black)',
-                border: isCurrent ? '2px solid var(--accent-black)' : '1px solid var(--accent-white)',
+                transform: 'translate(-50%, -50%)',
+                width: `min(${slotPercent}%, 44px)`,
+                height: '44px',
+                minWidth: '14px',
+                background: 'transparent',
+                border: 'none',
                 cursor: canClick ? 'pointer' : 'default',
                 pointerEvents: 'auto',
-                transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
-                boxShadow: isCurrent ? '2px 2px 0 var(--accent-red)' : 'none',
-                padding: 0
+                padding: 0,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
               }}
-              aria-label={`Jump to question ${idx + 1}`}
-            />
+              aria-label={`ไปยังข้อ ${idx + 1}`}
+            >
+              {/* Visible notch — identical look to before, just decoupled from the hit area */}
+              <span
+                aria-hidden="true"
+                style={{
+                  display: 'block',
+                  width: isCurrent ? '24px' : '16px',
+                  height: isCurrent ? '36px' : '24px',
+                  transform: isCurrent ? 'skewX(-10deg) scale(1.2)' : 'skewX(-10deg)',
+                  backgroundColor: isCurrent ? 'var(--accent-yellow)' : 'var(--accent-black)',
+                  border: isCurrent ? '2px solid var(--accent-black)' : '1px solid var(--accent-white)',
+                  boxShadow: isCurrent ? '2px 2px 0 var(--accent-red)' : 'none',
+                  transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+                  pointerEvents: 'none'
+                }}
+              />
+            </button>
           );
         })}
       </div>

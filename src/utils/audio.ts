@@ -3,7 +3,7 @@ let audioCtx: AudioContext | null = null;
 export const getAudioCtx = () => {
   if (typeof window === 'undefined') return null;
   if (!audioCtx) {
-    audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    audioCtx = new (window.AudioContext || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext!)();
   }
   return audioCtx;
 };
@@ -30,7 +30,7 @@ export const playPunkJingle = (pitchMultiplier: number = 1) => {
     const curve = new Float32Array(44100);
     const amount = 80; // High distortion
     for (let i = 0; i < 44100; ++i) {
-      let x = i * 2 / 44100 - 1;
+      const x = i * 2 / 44100 - 1;
       curve[i] = (3 + amount) * x * 20 * (Math.PI / 180) / (Math.PI + amount * Math.abs(x));
     }
     waveShaper.curve = curve;
@@ -262,7 +262,7 @@ export const playClickSound = (pitchIndex = 0, isHover = false) => {
         const curve = new Float32Array(44100);
         const amount = 50; 
         for (let i = 0; i < 44100; ++i) {
-          let x = i * 2 / 44100 - 1;
+          const x = i * 2 / 44100 - 1;
           curve[i] = (3 + amount) * x * 20 * (Math.PI / 180) / (Math.PI + amount * Math.abs(x));
         }
         waveShaper.curve = curve;

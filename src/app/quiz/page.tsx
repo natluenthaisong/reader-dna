@@ -28,6 +28,8 @@ export default function QuizPage() {
   const [rocketClass, setRocketClass] = useState<string | null>(null);
 
   useEffect(() => {
+    // SSR hydration guard: mark mounted on the client after first render.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 
@@ -228,9 +230,10 @@ export default function QuizPage() {
               ][(currentQuestionIndex + 2) % 5]
             }}
           >
-            <img 
-              src={`/authors/${currentQuestionIndex + 1}.jpg`} 
-              alt="" 
+            <img
+              src={`/authors/${currentQuestionIndex + 1}.jpg`}
+              alt=""
+              decoding="async"
               onError={(e) => { e.currentTarget.style.display = 'none'; }}
               onLoad={(e) => { e.currentTarget.style.display = 'block'; }}
               style={{

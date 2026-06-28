@@ -15,9 +15,10 @@ export async function POST() {
     // Check if there are changes to commit first to avoid error if no changes
     try {
       await execAsync('git commit -m "content: update via admin UI"', { cwd });
-    } catch (commitError: any) {
+    } catch (commitError: unknown) {
       // If error contains "nothing to commit", we can ignore or report it
-      if (commitError.stdout && commitError.stdout.includes('nothing to commit')) {
+      const stdout = (commitError as { stdout?: string })?.stdout;
+      if (stdout && stdout.includes('nothing to commit')) {
          return NextResponse.json({ success: false, message: 'No changes detected to commit.' });
       }
       throw commitError;
@@ -31,8 +32,9 @@ export async function POST() {
       message: 'Changes committed and pushed successfully!',
       details: { stdout, stderr }
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Deploy error:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    const message = error instanceof Error ? error.message : 'Internal server error';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

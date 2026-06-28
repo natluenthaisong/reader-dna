@@ -2,8 +2,33 @@
 
 import { useState, useEffect } from 'react';
 
+interface QuestionEntry {
+  id: string;
+  display_id?: string;
+  text: string;
+  [key: string]: unknown;
+}
+
+interface ArchetypeEntry {
+  id: string;
+  english_name: string;
+  thai_name: string;
+  short_name: string;
+  tagline: string;
+  hero_line: string;
+  summary: string;
+  strengths?: string[];
+  blind_spots?: string[];
+  [key: string]: unknown;
+}
+
+interface AdminContent {
+  questions: { questions: QuestionEntry[]; [key: string]: unknown };
+  archetypes: { archetypes: ArchetypeEntry[]; [key: string]: unknown };
+}
+
 export default function AdminPage() {
-  const [data, setData] = useState<{ questions: any; archetypes: any } | null>(null);
+  const [data, setData] = useState<AdminContent | null>(null);
   const [activeTab, setActiveTab] = useState<'questions' | 'archetypes'>('questions');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -63,16 +88,18 @@ export default function AdminPage() {
     setDeploying(false);
   };
 
-  const handleQuestionChange = (index: number, field: string, value: any) => {
+  const handleQuestionChange = (index: number, field: string, value: unknown) => {
+    if (!data) return;
     const newData = { ...data };
     newData.questions.questions[index][field] = value;
-    setData(newData as any);
+    setData(newData);
   };
 
-  const handleArchetypeChange = (index: number, field: string, value: any) => {
+  const handleArchetypeChange = (index: number, field: string, value: unknown) => {
+    if (!data) return;
     const newData = { ...data };
     newData.archetypes.archetypes[index][field] = value;
-    setData(newData as any);
+    setData(newData);
   };
 
   if (loading) return <div style={{ padding: '2rem', color: 'var(--text-light)' }}>Loading admin panel...</div>;
@@ -142,7 +169,7 @@ export default function AdminPage() {
         </h1>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-          {activeTab === 'questions' && data.questions.questions.map((q: any, index: number) => (
+          {activeTab === 'questions' && data.questions.questions.map((q: QuestionEntry, index: number) => (
             <div key={q.id} style={{ border: '3px solid var(--accent-black)', padding: '1.5rem', background: 'white', boxShadow: '5px 5px 0 var(--accent-cyan)' }}>
               <h3 style={{ margin: '0 0 1rem 0' }}>{q.display_id}</h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
@@ -157,7 +184,7 @@ export default function AdminPage() {
             </div>
           ))}
 
-          {activeTab === 'archetypes' && data.archetypes.archetypes.map((a: any, index: number) => (
+          {activeTab === 'archetypes' && data.archetypes.archetypes.map((a: ArchetypeEntry, index: number) => (
             <div key={a.id} style={{ border: '3px solid var(--accent-black)', padding: '1.5rem', background: 'white', boxShadow: '5px 5px 0 var(--accent-yellow)' }}>
               <h3 style={{ margin: '0 0 1rem 0' }}>{a.english_name} / {a.thai_name}</h3>
               

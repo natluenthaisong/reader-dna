@@ -20,6 +20,8 @@ export interface Question {
 // ---- Scoring ----
 
 export interface AxisScores {
+  // Indexable: scoring code reads axes dynamically via Object.keys(weights).
+  [axis: string]: number;
   motivation: number;
   breadth: number;
   discipline: number;
@@ -72,6 +74,8 @@ export interface ScoringResult {
 // ---- Archetypes ----
 
 export interface ArchetypeVector {
+  // Indexable: weightedDistance() compares vectors axis-by-axis via dynamic keys.
+  [axis: string]: number;
   motivation: number;
   breadth: number;
   discipline: number;
@@ -176,4 +180,15 @@ export interface ScoreQuizParams {
   questionsData: QuestionsData;
   scoringConfig: ScoringConfig;
   questionVersion: string;
+}
+
+// ---- /api/score response (what the client store actually holds) ----
+
+export interface QuizApiResult {
+  success: boolean;
+  archetypeId: string;
+  secondaryId: string;
+  derivedScores: DerivedScores;
+  highlights: ShareHighlight[];
+  error?: string;
 }

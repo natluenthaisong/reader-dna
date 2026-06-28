@@ -8,6 +8,9 @@ export function TypewriterText({ text, id }: { text: string, id: string }) {
   const [isTyping, setIsTyping] = useState(true);
   
   useEffect(() => {
+    // Reset the typing animation whenever the text/id changes; these synchronous
+    // resets are intentional so the typewriter restarts from scratch.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setDisplayedText('');
     setIsTyping(true);
     let i = 0;

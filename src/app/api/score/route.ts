@@ -4,7 +4,7 @@ import scoringConfig from '../../../../content/scoring-config.json';
 import { scoreQuiz } from '../../../lib/scoring';
 
 export async function POST(request: Request) {
-  let body: any = {};
+  let body: { answers?: Record<string, number> } = {};
   try {
     body = await request.json();
     const { answers } = body;
@@ -35,12 +35,13 @@ export async function POST(request: Request) {
       derivedScores: result.derived_scores,
       highlights: result.share_highlights,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Scoring error:', error);
+    const message = error instanceof Error ? error.message : 'Internal server error';
     return NextResponse.json(
-      { 
-        success: false, 
-        error: `${error.message || 'Internal server error'} (Received ${body?.answers ? Object.keys(body.answers).length : 0} answers)` 
+      {
+        success: false,
+        error: `${message} (Received ${body?.answers ? Object.keys(body.answers).length : 0} answers)`
       },
       { status: 500 }
     );

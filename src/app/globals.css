@@ -515,3 +515,23 @@ a {
     stroke-dashoffset: 0;
   }
 }
+
+/* Visible keyboard focus ring (punk cyan) — only for keyboard nav, not mouse clicks */
+:focus-visible {
+  outline: 3px solid var(--accent-cyan);
+  outline-offset: 3px;
+}
+
+/* Respect users who prefer reduced motion: neutralise decorative animation/transitions.
+   `animation-fill-mode: forwards` states (e.g. stamp-pop, flash-word) still resolve to
+   their final frame, so reveal-based UI keeps working without the movement. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

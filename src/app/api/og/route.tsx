@@ -82,7 +82,7 @@ export async function GET(request: Request) {
             {archetype.thai_name}
           </h1>
           <h2 style={{ fontSize: '36px', fontWeight: 'normal', fontStyle: 'italic', color: '#10B981', marginBottom: '40px' }}>
-            "{archetype.share_card.tagline}"
+            &quot;{archetype.share_card.tagline}&quot;
           </h2>
           <p style={{ fontSize: '28px', color: '#F8FAFC', padding: '0 40px', opacity: 0.9 }}>
             {archetype.share_card.punchline}
@@ -104,7 +104,7 @@ export async function GET(request: Request) {
         ],
       }
     );
-  } catch (e: any) {
+  } catch (e: unknown) {
     console.error(e);
     return new Response('Failed to generate image', { status: 500 });
   }

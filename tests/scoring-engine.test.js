@@ -2,7 +2,7 @@
 
 const assert = require('assert');
 const path = require('path');
-const { scoreQuiz } = require('../src/scoring-engine');
+const { scoreQuiz } = require('../src/lib/scoring.ts');
 
 const questionsData = require('../content/questions.json');
 const scoringConfig = require('../content/scoring-config.json');

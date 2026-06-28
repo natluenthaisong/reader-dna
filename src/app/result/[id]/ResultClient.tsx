@@ -1,20 +1,22 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useQuizStore } from '@/store/useQuizStore';
 import { playPunkJingle, getAudioCtx } from '@/utils/audio';
 import { DEFAULT_SCORE_LABELS } from '@/lib/scoring';
+import type { Archetype, ShareHighlight } from '@/types/index';
 
-export default function ResultClient({ archetype }: { archetype: any }) {
+export default function ResultClient({ archetype }: { archetype: Archetype | null }) {
   const router = useRouter();
-  const { result, resetQuiz } = useQuizStore();
+  const { result } = useQuizStore();
   const [mounted, setMounted] = useState(false);
   const [isCapturing, setIsCapturing] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
   const [isHoveringRansom, setIsHoveringRansom] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
+  const [shareError, setShareError] = useState<string | null>(null);
   const [customHeroLine, setCustomHeroLine] = useState(archetype?.hero_line || '');
   const resultRef = useRef<HTMLDivElement>(null);
   const heroTextRef = useRef<HTMLTextAreaElement>(null);
@@ -36,8 +38,26 @@ export default function ResultClient({ archetype }: { archetype: any }) {
   }, []);
 
   useEffect(() => {
+    // SSR hydration guard: mark mounted on the client after first render.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
+
+  // Precompute stable random rotations for the ransom-note letters once per
+  // archetype so they don't change on every rerender (keeps render pure).
+  const ransomRotations = useMemo(() => {
+    const maxLetters = 32;
+    // Deterministic pseudo-random rotations seeded by the archetype id so the
+    // tilt looks random but is pure and stable across rerenders.
+    let seed = 0;
+    const id = archetype?.id ?? '';
+    for (let c = 0; c < id.length; c++) seed = (seed * 31 + id.charCodeAt(c)) >>> 0;
+    return Array.from({ length: maxLetters }, (_, i) => {
+      const x = Math.sin(seed + i * 12.9898) * 43758.5453;
+      const frac = x - Math.floor(x);
+      return frac * 20 - 10;
+    });
+  }, [archetype?.id]);
 
   // Auto-resize the textarea based on content
   useEffect(() => {
@@ -60,7 +80,7 @@ export default function ResultClient({ archetype }: { archetype: any }) {
     );
   }
 
-  const highlights = result?.highlights || archetype.share_card.preferred_highlights.map((h: string) => ({
+  const highlights: ShareHighlight[] = result?.highlights || archetype.share_card.preferred_highlights.map((h) => ({
     key: h, label: DEFAULT_SCORE_LABELS[h] || h.replace(/_/g, ' '), value: 85
   }));
 
@@ -72,9 +92,10 @@ export default function ResultClient({ archetype }: { archetype: any }) {
 
   const handleShare = async () => {
     if (isSharing) return;
+    setShareError(null);
     setIsSharing(true);
     setIsCapturing(true);
-    
+
     if (resultRef.current) {
       try {
         await new Promise(resolve => setTimeout(resolve, 150));
@@ -102,7 +123,7 @@ export default function ResultClient({ archetype }: { archetype: any }) {
         }
       } catch (err) {
         console.error('Failed to generate PNG', err);
-        alert('Failed to save image. Please try again.');
+        setShareError('เซฟรูปไม่สำเร็จ ลองกดแชร์อีกครั้งนะ');
       } finally {
         setIsCapturing(false);
         setIsSharing(false);
@@ -166,7 +187,7 @@ export default function ResultClient({ archetype }: { archetype: any }) {
                     else if (i >= 3) delay = '0.25s';
                   }
 
-                  const rotation = Math.random() * 20 - 10;
+                  const rotation = ransomRotations[i];
                   
                   return (
                     <span key={i} className={`ransom-word ${i % 4 === 0 ? 'halftone-yellow' : ''} ${isHoveringRansom ? 'flip-in' : ''}`} style={{ 
@@ -177,7 +198,7 @@ export default function ResultClient({ archetype }: { archetype: any }) {
                       animationDelay: delay,
                       background: ['var(--accent-yellow)', 'var(--accent-white)', 'var(--accent-cyan)', 'var(--accent-red)'][i % 4],
                       color: ['var(--accent-black)', 'var(--accent-black)', 'var(--accent-black)', 'var(--accent-white)'][i % 4]
-                    } as any}>
+                    } as React.CSSProperties}>
                       {char}
                     </span>
                   );
@@ -197,7 +218,7 @@ export default function ResultClient({ archetype }: { archetype: any }) {
             {/* STATS AREA */}
             <div style={{ flex: '1 1 35%', display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'flex-end', marginTop: '24px', background: 'rgba(255,255,255,0.95)', border: '3px solid black', padding: '16px', transform: 'rotate(-1deg)', boxShadow: '6px 6px 0 var(--accent-black)', position: 'relative' }}>
               <div className="tape" style={{ top: '-12px', right: '8px', width: '64px', height: '20px', transform: 'rotate(15deg)' }}></div>
-              {highlights && highlights.slice(0, 3).map((h: any, i: number) => (
+              {highlights && highlights.slice(0, 3).map((h: ShareHighlight, i: number) => (
                 <div key={h.key} style={{ display: 'flex', alignItems: 'center', width: '100%', maxWidth: '360px', justifyContent: 'flex-end', gap: '12px' }}>
                   <span style={{ fontSize: '15px', fontWeight: '900', textTransform: 'uppercase', color: 'var(--accent-black)', lineHeight: 1.2, textAlign: 'right', flex: 1 }}>{h.label}</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -243,14 +264,23 @@ export default function ResultClient({ archetype }: { archetype: any }) {
                   transform: 'rotate(3deg)',
                   boxShadow: '2px 2px 0 var(--accent-red)',
                   pointerEvents: 'none',
-                  zIndex: 20
+                  zIndex: 20,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px'
                 }}
               >
-                ✏️ TAP TO EDIT
+                {/* Pencil icon (SVG, not emoji) to match the zine aesthetic */}
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M12 20h9" />
+                  <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+                </svg>
+                TAP TO EDIT
               </div>
             )}
-            <textarea 
+            <textarea
               ref={heroTextRef}
+              aria-label="แก้ไขประโยคเด็ดของคุณ"
               value={customHeroLine}
               onChange={(e) => setCustomHeroLine(e.target.value)}
               onFocus={(e) => {
@@ -319,13 +349,33 @@ export default function ResultClient({ archetype }: { archetype: any }) {
               </div>
             </div>
           ) : (
-            <div id="result-actions" style={{ display: 'flex', gap: '16px', justifyContent: 'flex-end', marginTop: '24px', zIndex: 50, flexWrap: 'wrap' }}>
-              <button onClick={handleRetake} className="p5-button hover-glitch" style={{ fontSize: '20px', padding: '12px 24px', transform: 'rotate(-2deg)', flex: '1 1 auto' }}>
-                RETRY
-              </button>
-              <button onClick={handleShare} disabled={isSharing} className="p5-button inverted hover-glitch" style={{ fontSize: '20px', padding: '12px 24px', transform: 'rotate(2deg)', flex: '1 1 auto' }}>
-                SHARE
-              </button>
+            <div id="result-actions" style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '24px', zIndex: 50 }}>
+              {shareError && (
+                <div
+                  role="alert"
+                  style={{
+                    background: 'var(--accent-red)',
+                    color: 'var(--accent-white)',
+                    border: '3px solid var(--accent-black)',
+                    boxShadow: '4px 4px 0 var(--accent-black)',
+                    padding: '10px 14px',
+                    fontWeight: 900,
+                    fontStyle: 'italic',
+                    transform: 'rotate(-1deg)',
+                    textShadow: '1px 1px 0 var(--accent-black)'
+                  }}
+                >
+                  {shareError}
+                </div>
+              )}
+              <div style={{ display: 'flex', gap: '16px', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
+                <button onClick={handleRetake} className="p5-button hover-glitch" style={{ fontSize: '20px', padding: '12px 24px', transform: 'rotate(-2deg)', flex: '1 1 auto' }}>
+                  RETRY
+                </button>
+                <button onClick={handleShare} disabled={isSharing} className="p5-button inverted hover-glitch" style={{ fontSize: '20px', padding: '12px 24px', transform: 'rotate(2deg)', flex: '1 1 auto', cursor: isSharing ? 'wait' : 'pointer' }}>
+                  {isSharing ? 'SAVING…' : 'SHARE'}
+                </button>
+              </div>
             </div>
           )}
           
