@@ -1,12 +1,13 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import type { ScoringResult } from '@/types/index';
 
 interface QuizState {
   answers: Record<string, number>;
   currentQuestionIndex: number;
-  result: any;
+  result: ScoringResult | null;
   setAnswer: (questionId: string, value: number) => void;
-  setResult: (result: any) => void;
+  setResult: (result: ScoringResult | null) => void;
   nextQuestion: () => void;
   prevQuestion: () => void;
   jumpToQuestion: (index: number) => void;
@@ -44,7 +45,7 @@ export const useQuizStore = create<QuizState>()(
         set({ answers: {}, currentQuestionIndex: 0, result: null }),
     }),
     {
-      name: 'reader-dna-quiz-storage', // name of the item in the storage (must be unique)
+      name: 'reader-dna-quiz-storage',
     }
   )
 );
