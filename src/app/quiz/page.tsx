@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useQuizStore } from '@/store/useQuizStore';
 import questionsData from '../../../content/questions.json';
-import { playTypewriterSound, playRocketSound, playClickSound, playPunkJingle } from '@/utils/audio';
+import { playRocketSound, playClickSound, playPunkJingle } from '@/utils/audio';
 import { TypewriterText } from '@/components/ui/TypewriterText';
 import { StickerDecorations } from '@/components/ui/StickerDecorations';
 import { ProgressBar } from '@/components/ui/ProgressBar';
@@ -20,7 +20,7 @@ const PANEL_SHAPES = [
 
 export default function QuizPage() {
   const router = useRouter();
-  const { answers, currentQuestionIndex, setAnswer, nextQuestion, prevQuestion, jumpToQuestion, setResult } = useQuizStore();
+  const { answers, currentQuestionIndex, setAnswer, nextQuestion, prevQuestion, setResult } = useQuizStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
@@ -35,11 +35,6 @@ export default function QuizPage() {
 
   const questions = questionsData.questions;
   const currentQuestion = questions[currentQuestionIndex];
-
-  const maxUnlockedIndex = useMemo(
-    () => Math.min(questions.length - 1, Object.keys(answers).length),
-    [questions.length, answers]
-  );
 
   const currentShape = useMemo(
     () => PANEL_SHAPES[currentQuestionIndex % PANEL_SHAPES.length],
@@ -230,6 +225,7 @@ export default function QuizPage() {
               ][(currentQuestionIndex + 2) % 5]
             }}
           >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={`/authors/${currentQuestionIndex + 1}.jpg`}
               alt=""

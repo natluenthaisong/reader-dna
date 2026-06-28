@@ -406,7 +406,8 @@ export default function ResultClient({ archetype }: { archetype: Archetype | nul
             <h3 className="p5-text-bg-black" style={{ marginBottom: '16px', fontSize: '18px', textAlign: 'center' }}>
               แตะค้างที่รูปเพื่อบันทึก
             </h3>
-            <img 
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
               src={generatedImage} 
               alt="Your Reader DNA" 
               style={{ width: '100%', objectFit: 'contain', maxHeight: '50vh', border: '2px solid black' }} 

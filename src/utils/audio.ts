@@ -75,7 +75,7 @@ export const playPunkJingle = (pitchMultiplier: number = 1) => {
       });
     });
     
-  } catch (e) {
+  } catch {
     // Ignore if audio isn't supported
   }
 };
@@ -105,7 +105,7 @@ export const playSynthBlip = (freq: number = 400) => {
         
         osc.start();
         osc.stop(ctx.currentTime + 0.25);
-      } catch (err) {}
+      } catch {}
     };
 
     if (ctx.state === 'suspended') {
@@ -113,7 +113,7 @@ export const playSynthBlip = (freq: number = 400) => {
     } else {
       play();
     }
-  } catch (e) {}
+  } catch {}
 };
 
 // Fast scribbling sound for the highlight animation
@@ -146,7 +146,7 @@ export const playScribbleSound = () => {
         
         osc.start();
         osc.stop(ctx.currentTime + 0.3);
-      } catch (err) {}
+      } catch {}
     };
 
     if (ctx.state === 'suspended') {
@@ -154,7 +154,7 @@ export const playScribbleSound = () => {
     } else {
       play();
     }
-  } catch (e) {}
+  } catch {}
 };
 
 export const playTypewriterSound = () => {
@@ -177,7 +177,7 @@ export const playTypewriterSound = () => {
         
         osc.start();
         osc.stop(ctx.currentTime + 0.05);
-      } catch (err) {}
+      } catch {}
     };
 
     if (ctx.state === 'suspended') {
@@ -185,7 +185,7 @@ export const playTypewriterSound = () => {
     } else {
       play();
     }
-  } catch (e) {}
+  } catch {}
 };
 
 export const playRocketSound = () => {
@@ -210,7 +210,7 @@ export const playRocketSound = () => {
         
         osc.start();
         osc.stop(ctx.currentTime + 1.0);
-      } catch (err) {}
+      } catch {}
     };
 
     if (ctx.state === 'suspended') {
@@ -218,7 +218,7 @@ export const playRocketSound = () => {
     } else {
       play();
     }
-  } catch (e) {}
+  } catch {}
 };
 
 export const playClickSound = (pitchIndex = 0, isHover = false) => {
@@ -306,7 +306,7 @@ export const playClickSound = (pitchIndex = 0, isHover = false) => {
         noiseGain.connect(waveShaper); 
         noise.start();
         
-      } catch (err) {}
+      } catch {}
     };
 
     if (ctx.state === 'suspended') {
@@ -314,5 +314,5 @@ export const playClickSound = (pitchIndex = 0, isHover = false) => {
     } else {
       play();
     }
-  } catch (e) {}
+  } catch {}
 };

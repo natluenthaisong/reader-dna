@@ -65,7 +65,7 @@ export default function AdminPage() {
       } else {
         setMessage({ text: result.error || 'Failed to save.', type: 'error' });
       }
-    } catch (err) {
+    } catch {
       setMessage({ text: 'Network error saving content.', type: 'error' });
     }
     setSaving(false);
@@ -82,7 +82,7 @@ export default function AdminPage() {
       } else {
         setMessage({ text: result.message || result.error || 'Failed to deploy.', type: 'error' });
       }
-    } catch (err) {
+    } catch {
       setMessage({ text: 'Network error during deployment.', type: 'error' });
     }
     setDeploying(false);
