@@ -6,6 +6,34 @@ import { getAudioCtx, playSynthBlip } from '@/utils/audio';
 import { ArchetypeGrid } from '@/components/ui/ArchetypeGrid';
 import { HomeStickers } from '@/components/ui/StickerDecorations';
 
+interface RansomLetterProps {
+  letter: string;
+  freq: number;
+  rotation: string;
+  bg?: string;
+  color?: string;
+  size: string;
+  extraClass?: string;
+}
+
+function RansomLetter({ letter, freq, rotation, bg, color, size, extraClass = '' }: RansomLetterProps) {
+  return (
+    <span
+      onMouseEnter={() => playSynthBlip(freq)}
+      className={`ransom-word ${extraClass}`}
+      style={{
+        fontSize: size,
+        transform: rotation,
+        background: bg,
+        color: color,
+        cursor: 'crosshair',
+      }}
+    >
+      {letter}
+    </span>
+  );
+}
+
 export default function Home() {
 
   // Unlock AudioContext on first interaction
@@ -24,6 +52,9 @@ export default function Home() {
     };
   }, []);
 
+  const titleSize = 'clamp(3rem, 10vw, 5rem)';
+  const dnaSize = 'clamp(4rem, 15vw, 7rem)';
+
   return (
     <main className="container animate-p5-snap" style={{ alignItems: 'center', textAlign: 'center', position: 'relative' }}>
       
@@ -39,19 +70,20 @@ export default function Home() {
       <div style={{ position: 'absolute', top: '20%', left: '10%', width: '80%', height: '60%', background: 'var(--accent-cyan)', clipPath: 'polygon(5% 0, 95% 10%, 100% 90%, 0 95%)', zIndex: -2, opacity: 0.8, transform: 'rotate(5deg)' }}></div>
 
       <div style={{ marginBottom: 'clamp(1rem, 3vh, 2rem)', position: 'relative', zIndex: 10 }}>
-        {/* Ransom Note Title */}
+        {/* Ransom Note Title — READER */}
         <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center', gap: '5px', marginBottom: '10px' }}>
-          <span onMouseEnter={() => playSynthBlip(300)} className="ransom-word halftone-yellow" style={{ fontSize: 'clamp(3rem, 10vw, 5rem)', transform: 'rotate(-5deg)', cursor: 'crosshair' }}>R</span>
-          <span onMouseEnter={() => playSynthBlip(350)} className="ransom-word" style={{ fontSize: 'clamp(3rem, 10vw, 5rem)', transform: 'rotate(2deg)', background: 'var(--accent-white)', cursor: 'crosshair' }}>E</span>
-          <span onMouseEnter={() => playSynthBlip(400)} className="ransom-word" style={{ fontSize: 'clamp(3rem, 10vw, 5rem)', transform: 'rotate(-8deg)', background: 'var(--accent-red)', color: 'var(--accent-white)', cursor: 'crosshair' }}>A</span>
-          <span onMouseEnter={() => playSynthBlip(450)} className="ransom-word" style={{ fontSize: 'clamp(3rem, 10vw, 5rem)', transform: 'rotate(5deg)', background: 'var(--accent-black)', color: 'var(--accent-yellow)', cursor: 'crosshair' }}>D</span>
-          <span onMouseEnter={() => playSynthBlip(500)} className="ransom-word" style={{ fontSize: 'clamp(3rem, 10vw, 5rem)', transform: 'rotate(-2deg)', background: 'var(--accent-white)', cursor: 'crosshair' }}>E</span>
-          <span onMouseEnter={() => playSynthBlip(550)} className="ransom-word" style={{ fontSize: 'clamp(3rem, 10vw, 5rem)', transform: 'rotate(10deg)', background: 'var(--accent-cyan)', cursor: 'crosshair' }}>R</span>
+          <RansomLetter letter="R" freq={300} rotation="rotate(-5deg)" extraClass="halftone-yellow" size={titleSize} />
+          <RansomLetter letter="E" freq={350} rotation="rotate(2deg)" bg="var(--accent-white)" size={titleSize} />
+          <RansomLetter letter="A" freq={400} rotation="rotate(-8deg)" bg="var(--accent-red)" color="var(--accent-white)" size={titleSize} />
+          <RansomLetter letter="D" freq={450} rotation="rotate(5deg)" bg="var(--accent-black)" color="var(--accent-yellow)" size={titleSize} />
+          <RansomLetter letter="E" freq={500} rotation="rotate(-2deg)" bg="var(--accent-white)" size={titleSize} />
+          <RansomLetter letter="R" freq={550} rotation="rotate(10deg)" bg="var(--accent-cyan)" size={titleSize} />
         </div>
+        {/* Ransom Note Title — DNA */}
         <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center', gap: '5px' }}>
-          <span onMouseEnter={() => playSynthBlip(300)} className="ransom-word" style={{ fontSize: 'clamp(4rem, 15vw, 7rem)', transform: 'rotate(-4deg)', background: 'var(--accent-black)', color: 'var(--accent-green)', cursor: 'crosshair' }}>D</span>
-          <span onMouseEnter={() => playSynthBlip(350)} className="ransom-word" style={{ fontSize: 'clamp(4rem, 15vw, 7rem)', transform: 'rotate(6deg)', background: 'var(--accent-red)', color: 'var(--accent-black)', cursor: 'crosshair' }}>N</span>
-          <span onMouseEnter={() => playSynthBlip(400)} className="ransom-word halftone-yellow" style={{ fontSize: 'clamp(4rem, 15vw, 7rem)', transform: 'rotate(-2deg)', cursor: 'crosshair' }}>A</span>
+          <RansomLetter letter="D" freq={300} rotation="rotate(-4deg)" bg="var(--accent-black)" color="var(--accent-green)" size={dnaSize} />
+          <RansomLetter letter="N" freq={350} rotation="rotate(6deg)" bg="var(--accent-red)" color="var(--accent-black)" size={dnaSize} />
+          <RansomLetter letter="A" freq={400} rotation="rotate(-2deg)" extraClass="halftone-yellow" size={dnaSize} />
         </div>
         
         <div style={{ position: 'relative', display: 'inline-block' }}>
