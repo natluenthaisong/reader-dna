@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useQuizStore } from '@/store/useQuizStore';
 import { playPunkJingle, getAudioCtx } from '@/utils/audio';
+import { DEFAULT_SCORE_LABELS } from '@/lib/scoring';
 
 export default function ResultClient({ archetype }: { archetype: any }) {
   const router = useRouter();
@@ -60,7 +61,7 @@ export default function ResultClient({ archetype }: { archetype: any }) {
   }
 
   const highlights = result?.highlights || archetype.share_card.preferred_highlights.map((h: string) => ({
-    key: h, label: h.replace(/_/g, ' '), value: 85
+    key: h, label: DEFAULT_SCORE_LABELS[h] || h.replace(/_/g, ' '), value: 85
   }));
 
   const handleRetake = () => {

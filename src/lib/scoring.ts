@@ -1,4 +1,4 @@
-const DEFAULT_SCORE_LABELS: Record<string, string> = {
+export const DEFAULT_SCORE_LABELS: Record<string, string> = {
   book_hoarding_risk: 'ความเสี่ยงกองดองงอก',
   finish_probability: 'โอกาสอ่านจบ',
   booktok_susceptibility: 'โอกาสโดนป้ายยาสำเร็จ',
