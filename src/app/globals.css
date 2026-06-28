@@ -383,9 +383,17 @@ a {
   width: clamp(150px, 25vw, 350px);
   height: clamp(200px, 35vw, 450px);
   z-index: 0; /* Changed from -1 so it stays above the white paper panel */
-  pointer-events: none;
+  pointer-events: auto; /* Changed from none to allow hover */
+  cursor: pointer;
   filter: drop-shadow(6px 6px 0px var(--accent-black));
   transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.punk-portrait-wrapper:hover {
+  z-index: 999 !important;
+  opacity: 1 !important;
+  transform: scale(1.1) rotate(0deg) !important;
+  filter: drop-shadow(12px 12px 0px var(--accent-red)); /* Give it an extra pop on hover */
 }
 
 .punk-portrait-wrapper img {
@@ -397,6 +405,24 @@ a {
   filter: grayscale(100%) contrast(800%) brightness(1.2);
   mix-blend-mode: multiply; /* makes white background invisible! */
 }
+
+/* Mobile Adjustments for Portrait */
+@media (max-width: 768px) {
+  .punk-portrait-wrapper {
+    top: -8%;
+    right: -2%;
+    left: auto;
+    margin: 0;
+    width: clamp(80px, 20vw, 120px);
+    height: clamp(100px, 25vw, 150px);
+    opacity: 0.9;
+  }
+  
+  .punk-portrait-wrapper img {
+    object-position: top right;
+  }
+}
+
 
 /* Rocket Animations for Back Button */
 @keyframes rocket-flight-1 {

@@ -198,21 +198,39 @@ export default function QuizPage() {
       >
         {/* Punk Portrait Cutout (Dynamically loaded based on question) */}
         <div className="punk-portrait-wrapper" style={{ transform: `rotate(${currentQuestionIndex % 2 === 0 ? '3deg' : '-3deg'})` }}>
-          <img 
-            src={`/authors/${currentQuestionIndex + 1}.jpg`} 
-            alt="" 
-            onError={(e) => { e.currentTarget.style.display = 'none'; }}
-            onLoad={(e) => { e.currentTarget.style.display = 'block'; }}
+          <div
             style={{
+              width: '100%',
+              height: '100%',
+              padding: 'clamp(6px, 1.5vw, 12px)',
+              background: currentQuestionIndex % 2 === 0 ? 'var(--accent-black)' : 'var(--accent-white)',
               clipPath: [
-                'polygon(2% 3%, 98% 1%, 100% 97%, 3% 99%)',
-                'polygon(0% 0%, 100% 2%, 98% 98%, 2% 100%)',
-                'polygon(3% 1%, 97% 3%, 100% 100%, 0% 96%)',
-                'polygon(1% 2%, 99% 0%, 96% 99%, 4% 97%)',
-                'polygon(0% 4%, 100% 0%, 98% 96%, 2% 100%)'
-              ][currentQuestionIndex % 5]
+                'polygon(1% 0%, 98% 2%, 100% 98%, 0% 100%)',
+                'polygon(0% 1%, 100% 0%, 99% 99%, 2% 98%)',
+                'polygon(2% 2%, 99% 1%, 98% 100%, 1% 97%)',
+                'polygon(1% 0%, 97% 3%, 100% 98%, 0% 99%)',
+                'polygon(0% 3%, 100% 1%, 98% 97%, 2% 100%)'
+              ][(currentQuestionIndex + 2) % 5]
             }}
-          />
+          >
+            <img 
+              src={`/authors/${currentQuestionIndex + 1}.jpg`} 
+              alt="" 
+              onError={(e) => { e.currentTarget.style.display = 'none'; }}
+              onLoad={(e) => { e.currentTarget.style.display = 'block'; }}
+              style={{
+                filter: 'grayscale(100%) contrast(800%) brightness(1.2)',
+                mixBlendMode: currentQuestionIndex % 2 === 0 ? 'normal' : 'multiply',
+                clipPath: [
+                  'polygon(2% 3%, 98% 1%, 100% 97%, 3% 99%)',
+                  'polygon(0% 0%, 100% 2%, 98% 98%, 2% 100%)',
+                  'polygon(3% 1%, 97% 3%, 100% 100%, 0% 96%)',
+                  'polygon(1% 2%, 99% 0%, 96% 99%, 4% 97%)',
+                  'polygon(0% 4%, 100% 0%, 98% 96%, 2% 100%)'
+                ][currentQuestionIndex % 5]
+              }}
+            />
+          </div>
         </div>
 
         {/* Absolute Background Panel that gets clipped */}
