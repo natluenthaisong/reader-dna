@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useQuizStore } from '@/store/useQuizStore';
 import questionsData from '../../../content/questions.json';
@@ -8,6 +8,15 @@ import { playTypewriterSound, playRocketSound, playClickSound, playPunkJingle } 
 import { TypewriterText } from '@/components/ui/TypewriterText';
 import { StickerDecorations } from '@/components/ui/StickerDecorations';
 import { ProgressBar } from '@/components/ui/ProgressBar';
+
+// Define 5 distinct chaotic 8-point polygons — static, defined outside component to avoid recreation
+const PANEL_SHAPES = [
+  'polygon(2% 3%, 50% 0%, 98% 4%, 100% 50%, 97% 98%, 45% 100%, 3% 97%, 0% 55%)',
+  'polygon(0% 0%, 48% 3%, 100% 2%, 98% 45%, 99% 99%, 55% 97%, 1% 100%, 3% 45%)',
+  'polygon(3% 2%, 55% 0%, 97% 1%, 100% 55%, 98% 100%, 50% 99%, 0% 98%, 2% 50%)',
+  'polygon(1% 4%, 45% 0%, 100% 3%, 97% 55%, 100% 97%, 45% 100%, 2% 98%, 0% 48%)',
+  'polygon(5% 0%, 50% 4%, 95% 0%, 100% 50%, 95% 100%, 50% 96%, 5% 100%, 0% 50%)'
+];
 
 export default function QuizPage() {
   const router = useRouter();
@@ -24,24 +33,23 @@ export default function QuizPage() {
 
   const questions = questionsData.questions;
   const currentQuestion = questions[currentQuestionIndex];
-  const progress = (currentQuestionIndex / (questions.length - 1)) * 100;
-  
-  const maxUnlockedIndex = Math.min(questions.length - 1, Object.keys(answers).length);
 
-  // Define 5 distinct chaotic 8-point polygons
-  const panelShapes = [
-    'polygon(2% 3%, 50% 0%, 98% 4%, 100% 50%, 97% 98%, 45% 100%, 3% 97%, 0% 55%)',
-    'polygon(0% 0%, 48% 3%, 100% 2%, 98% 45%, 99% 99%, 55% 97%, 1% 100%, 3% 45%)',
-    'polygon(3% 2%, 55% 0%, 97% 1%, 100% 55%, 98% 100%, 50% 99%, 0% 98%, 2% 50%)',
-    'polygon(1% 4%, 45% 0%, 100% 3%, 97% 55%, 100% 97%, 45% 100%, 2% 98%, 0% 48%)',
-    'polygon(5% 0%, 50% 4%, 95% 0%, 100% 50%, 95% 100%, 50% 96%, 5% 100%, 0% 50%)'
-  ];
-  const currentShape = panelShapes[currentQuestionIndex % panelShapes.length];
-  const currentTransform = currentQuestionIndex % 2 === 0 ? 'scale(1) rotate(-1deg)' : 'scale(1.02) rotate(1deg)';
+  const maxUnlockedIndex = useMemo(
+    () => Math.min(questions.length - 1, Object.keys(answers).length),
+    [questions.length, answers]
+  );
 
+  const currentShape = useMemo(
+    () => PANEL_SHAPES[currentQuestionIndex % PANEL_SHAPES.length],
+    [currentQuestionIndex]
+  );
 
+  const currentTransform = useMemo(
+    () => (currentQuestionIndex % 2 === 0 ? 'scale(1) rotate(-1deg)' : 'scale(1.02) rotate(1deg)'),
+    [currentQuestionIndex]
+  );
 
-  const handleSelect = async (value: number, index: number) => {
+  const handleSelect = useCallback(async (value: number, index: number) => {
     if (isTransitioning || isSubmitting) return;
     
     const isLast = currentQuestionIndex === questions.length - 1;
@@ -84,13 +92,38 @@ export default function QuizPage() {
           setErrorMsg(data.error || "Submission failed");
           setIsSubmitting(false);
         }
-      } catch (error: any) {
+      } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : "An unexpected error occurred";
         console.error("Error submitting quiz", error);
-        setErrorMsg(error.message || "An unexpected error occurred");
+        setErrorMsg(message);
         setIsSubmitting(false);
       }
     }
-  };
+  }, [isTransitioning, isSubmitting, currentQuestionIndex, questions.length, currentQuestion, setAnswer, nextQuestion, setResult, router]);
+
+  const handleBackClick = useCallback(() => {
+    if (!isTransitioning && !rocketClass) {
+      playClickSound(-1);
+      playRocketSound(); // Phew!
+      
+      const anims = ['rocket-anim-1', 'rocket-anim-2', 'rocket-anim-3'];
+      const chosen = anims[Math.floor(Math.random() * anims.length)];
+      setRocketClass(chosen);
+      
+      setTimeout(() => {
+        if (currentQuestionIndex === 0) {
+          router.push('/');
+        } else {
+          prevQuestion();
+        }
+        setRocketClass(null);
+      }, 1200);
+    }
+  }, [isTransitioning, rocketClass, currentQuestionIndex, prevQuestion, router]);
+
+  const handleBackMouseEnter = useCallback(() => {
+    if (!isTransitioning && !rocketClass) playClickSound(-1, true);
+  }, [isTransitioning, rocketClass]);
 
   if (!mounted) return null; // Prevent hydration mismatch
 
@@ -141,26 +174,8 @@ export default function QuizPage() {
       {/* Progress Header */}
       <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', marginBottom: 'clamp(1rem, 3vh, 2rem)' }}>
         <button 
-          onMouseEnter={() => { if (!isTransitioning && !rocketClass) playClickSound(-1, true); }}
-          onClick={() => {
-            if (!isTransitioning && !rocketClass) {
-              playClickSound(-1);
-              playRocketSound(); // Phew!
-              
-              const anims = ['rocket-anim-1', 'rocket-anim-2', 'rocket-anim-3'];
-              const chosen = anims[Math.floor(Math.random() * anims.length)];
-              setRocketClass(chosen);
-              
-              setTimeout(() => {
-                if (currentQuestionIndex === 0) {
-                  router.push('/');
-                } else {
-                  prevQuestion();
-                }
-                setRocketClass(null);
-              }, 1200);
-            }
-          }} 
+          onMouseEnter={handleBackMouseEnter}
+          onClick={handleBackClick}
           disabled={isTransitioning || rocketClass !== null}
           className={`hover-glitch ${rocketClass || ''}`}
           style={{ 
