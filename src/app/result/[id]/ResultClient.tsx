@@ -14,7 +14,9 @@ export default function ResultClient({ archetype }: { archetype: any }) {
   const [isSharing, setIsSharing] = useState(false);
   const [isHoveringRansom, setIsHoveringRansom] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
+  const [customHeroLine, setCustomHeroLine] = useState(archetype?.hero_line || '');
   const resultRef = useRef<HTMLDivElement>(null);
+  const heroTextRef = useRef<HTMLTextAreaElement>(null);
 
   // Unlock AudioContext on first interaction
   useEffect(() => {
@@ -35,6 +37,14 @@ export default function ResultClient({ archetype }: { archetype: any }) {
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Auto-resize the textarea based on content
+  useEffect(() => {
+    if (heroTextRef.current) {
+      heroTextRef.current.style.height = 'auto';
+      heroTextRef.current.style.height = heroTextRef.current.scrollHeight + 'px';
+    }
+  }, [customHeroLine, mounted]);
 
   if (!mounted) return null;
 
@@ -205,11 +215,70 @@ export default function ResultClient({ archetype }: { archetype: any }) {
             </div>
           </div>
 
-          {/* HERO LINE */}
-          <div className="p5-panel" style={{ padding: '12px 20px', transform: 'rotate(1deg)', background: 'var(--accent-black)', color: 'var(--accent-white)', border: '3px solid var(--accent-white)', marginTop: '8px' }}>
-            <p style={{ margin: 0, fontSize: '22px', fontWeight: '900', fontStyle: 'italic', lineHeight: 1.4, textTransform: 'uppercase' }}>
-              {archetype.hero_line}
-            </p>
+          {/* HERO LINE (EDITABLE) */}
+          <div className="p5-panel" style={{ 
+            position: 'relative',
+            padding: '12px 20px', 
+            transform: 'rotate(1deg)', 
+            background: 'var(--accent-black)', 
+            color: 'var(--accent-white)', 
+            border: '3px solid var(--accent-white)', 
+            marginTop: '8px',
+            transition: 'all 0.2s ease',
+            cursor: 'text'
+          }}>
+            {!isCapturing && (
+              <div 
+                style={{
+                  position: 'absolute',
+                  top: '-12px',
+                  right: '10px',
+                  background: 'var(--accent-yellow)',
+                  color: 'var(--accent-black)',
+                  border: '2px solid black',
+                  padding: '2px 8px',
+                  fontSize: '12px',
+                  fontWeight: 900,
+                  transform: 'rotate(3deg)',
+                  boxShadow: '2px 2px 0 var(--accent-red)',
+                  pointerEvents: 'none',
+                  zIndex: 20
+                }}
+              >
+                ✏️ TAP TO EDIT
+              </div>
+            )}
+            <textarea 
+              ref={heroTextRef}
+              value={customHeroLine}
+              onChange={(e) => setCustomHeroLine(e.target.value)}
+              onFocus={(e) => {
+                e.target.parentElement!.style.borderColor = 'var(--accent-yellow)';
+                e.target.parentElement!.style.boxShadow = '4px 4px 0 var(--accent-red)';
+              }}
+              onBlur={(e) => {
+                e.target.parentElement!.style.borderColor = 'var(--accent-white)';
+                e.target.parentElement!.style.boxShadow = 'none';
+              }}
+              style={{ 
+                margin: 0, 
+                width: '100%',
+                fontSize: '22px', 
+                fontWeight: '900', 
+                fontStyle: 'italic', 
+                lineHeight: 1.4, 
+                textTransform: 'uppercase',
+                background: 'transparent',
+                color: 'inherit',
+                border: 'none',
+                outline: 'none',
+                resize: 'none',
+                overflow: 'hidden',
+                fontFamily: 'inherit',
+                display: 'block'
+              }}
+              rows={2}
+            />
           </div>
           
           {/* DETAILS GRID */}
