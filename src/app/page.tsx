@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useEffect } from 'react';
 import { getAudioCtx, playSynthBlip, playScribbleSound } from '@/utils/audio';
+import { ArchetypeGrid } from '@/components/ui/ArchetypeGrid';
 
 export default function Home() {
 
@@ -129,6 +130,8 @@ export default function Home() {
           มีทั้งความจริง ความขำ และอาการที่คุณอาจไม่อยากยอมรับ
         </p>
       </div>
+
+      <ArchetypeGrid />
     </main>
   );
 }

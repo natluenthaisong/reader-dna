@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import questionsData from '../../../../content/questions.json';
 import scoringConfig from '../../../../content/scoring-config.json';
-import { scoreQuiz } from '../../../scoring-engine';
+import { scoreQuiz } from '../../../lib/scoring';
 
 export async function POST(request: Request) {
   let body: any = {};

@@ -1,6 +1,4 @@
-'use strict';
-
-const DEFAULT_SCORE_LABELS = {
+const DEFAULT_SCORE_LABELS: Record<string, string> = {
   book_hoarding_risk: 'ความเสี่ยงกองดองงอก',
   finish_probability: 'โอกาสอ่านจบ',
   booktok_susceptibility: 'โอกาสโดนป้ายยาสำเร็จ',
@@ -9,28 +7,46 @@ const DEFAULT_SCORE_LABELS = {
   recommendation_energy: 'พลังป้ายยาคนอื่น',
 };
 
-function clamp(value, min = 0, max = 100) {
+function clamp(value: number, min = 0, max = 100): number {
   return Math.max(min, Math.min(max, value));
 }
 
-function roundScore(value) {
+function roundScore(value: number): number {
   return Math.round(clamp(value));
 }
 
-function normalize(raw, min, max) {
+function normalize(raw: number, min: number, max: number): number {
   if (max === min) return 0;
   return ((raw - min) / (max - min)) * 100;
 }
 
-function mapById(items) {
-  const out = new Map();
+function mapById<T extends { id: string }>(items: T[]): Map<string, T> {
+  const out = new Map<string, T>();
   for (const item of items) out.set(item.id, item);
   return out;
 }
 
-function validateAnswers(answers, questions, expectedQuestionVersion, suppliedQuestionVersion) {
+interface Answer {
+  question_id: string;
+  value: number;
+}
+
+interface Question {
+  id: string;
+  active?: boolean;
+  reverse?: boolean;
+  weight?: number;
+  pole: string;
+}
+
+export function validateAnswers(
+  answers: Answer[],
+  questions: Question[],
+  expectedQuestionVersion: string,
+  suppliedQuestionVersion: string
+) {
   if (suppliedQuestionVersion !== expectedQuestionVersion) {
-    const err = new Error('question_version is not supported by this scoring version.');
+    const err: any = new Error('question_version is not supported by this scoring version.');
     err.code = 'QUESTION_VERSION_UNSUPPORTED';
     throw err;
   }
@@ -39,33 +55,33 @@ function validateAnswers(answers, questions, expectedQuestionVersion, suppliedQu
   const questionMap = mapById(activeQuestions);
 
   if (!Array.isArray(answers) || answers.length !== activeQuestions.length) {
-    const err = new Error(`Answers must include all ${activeQuestions.length} active questions.`);
+    const err: any = new Error(`Answers must include all ${activeQuestions.length} active questions.`);
     err.code = 'INVALID_ANSWERS';
     throw err;
   }
 
-  const seen = new Set();
+  const seen = new Set<string>();
   for (const answer of answers) {
     if (!answer || typeof answer.question_id !== 'string') {
-      const err = new Error('Each answer must include question_id.');
+      const err: any = new Error('Each answer must include question_id.');
       err.code = 'INVALID_ANSWERS';
       throw err;
     }
     if (seen.has(answer.question_id)) {
-      const err = new Error(`Duplicate question_id: ${answer.question_id}`);
+      const err: any = new Error(`Duplicate question_id: ${answer.question_id}`);
       err.code = 'INVALID_ANSWERS';
       throw err;
     }
     seen.add(answer.question_id);
 
     if (!questionMap.has(answer.question_id)) {
-      const err = new Error(`Unknown question_id: ${answer.question_id}`);
+      const err: any = new Error(`Unknown question_id: ${answer.question_id}`);
       err.code = 'INVALID_ANSWERS';
       throw err;
     }
 
     if (!Number.isInteger(answer.value) || answer.value < 1 || answer.value > 5) {
-      const err = new Error(`Answer value must be an integer from 1 to 5: ${answer.question_id}`);
+      const err: any = new Error(`Answer value must be an integer from 1 to 5: ${answer.question_id}`);
       err.code = 'INVALID_ANSWERS';
       throw err;
     }
@@ -73,25 +89,25 @@ function validateAnswers(answers, questions, expectedQuestionVersion, suppliedQu
 
   const missing = activeQuestions.map((q) => q.id).filter((id) => !seen.has(id));
   if (missing.length > 0) {
-    const err = new Error('Answers must include all active questions.');
+    const err: any = new Error('Answers must include all active questions.');
     err.code = 'INVALID_ANSWERS';
     err.details = { missing_question_ids: missing };
     throw err;
   }
 }
 
-function buildAnswerMap(answers) {
-  const out = new Map();
+function buildAnswerMap(answers: Answer[]): Map<string, number> {
+  const out = new Map<string, number>();
   for (const answer of answers) out.set(answer.question_id, answer.value);
   return out;
 }
 
-function calculatePoleScores(answers, questions) {
+export function calculatePoleScores(answers: Answer[], questions: Question[]) {
   const answerMap = buildAnswerMap(answers);
-  const poleRaw = {};
+  const poleRaw: Record<string, { score: number; weight: number; count: number; values: number[] }> = {};
 
   for (const question of questions.filter((q) => q.active !== false)) {
-    const rawValue = answerMap.get(question.id);
+    const rawValue = answerMap.get(question.id)!;
     const value = question.reverse ? 6 - rawValue : rawValue;
     const weight = typeof question.weight === 'number' ? question.weight : 1;
     if (!poleRaw[question.pole]) {
@@ -103,7 +119,7 @@ function calculatePoleScores(answers, questions) {
     poleRaw[question.pole].values.push(value);
   }
 
-  const poleScores = {};
+  const poleScores: Record<string, number> = {};
   for (const [pole, raw] of Object.entries(poleRaw)) {
     const min = raw.weight * 1;
     const max = raw.weight * 5;
@@ -113,7 +129,7 @@ function calculatePoleScores(answers, questions) {
   return { poleScores, poleRaw };
 }
 
-function calculateAxisScores(poleScores) {
+export function calculateAxisScores(poleScores: Record<string, number>) {
   return {
     motivation: poleScores.growth - poleScores.escape,
     breadth: poleScores.broad - poleScores.deep,
@@ -124,7 +140,7 @@ function calculateAxisScores(poleScores) {
   };
 }
 
-function weightedDistance(userVector, archetypeVector, weights) {
+export function weightedDistance(userVector: Record<string, number>, archetypeVector: Record<string, number>, weights: Record<string, number>) {
   let total = 0;
   for (const axis of Object.keys(weights)) {
     const diff = userVector[axis] - archetypeVector[axis];
@@ -133,14 +149,14 @@ function weightedDistance(userVector, archetypeVector, weights) {
   return Math.sqrt(total);
 }
 
-function rankArchetypes(axisScores, archetypeVectors, weights) {
+function rankArchetypes(axisScores: Record<string, number>, archetypeVectors: Record<string, Record<string, number>>, weights: Record<string, number>) {
   return Object.entries(archetypeVectors)
     .map(([id, vector]) => ({ id, distance: weightedDistance(axisScores, vector, weights) }))
     .sort((a, b) => a.distance - b.distance || a.id.localeCompare(b.id));
 }
 
-function calculateConsistency(poleRaw) {
-  const consistencies = [];
+function calculateConsistency(poleRaw: Record<string, { values: number[] }>) {
+  const consistencies: number[] = [];
   for (const raw of Object.values(poleRaw)) {
     if (raw.values.length < 2) continue;
     const sorted = raw.values.slice(0, 2);
@@ -151,7 +167,7 @@ function calculateConsistency(poleRaw) {
   return consistencies.reduce((sum, v) => sum + v, 0) / consistencies.length;
 }
 
-function calculateConfidence({ primaryDistance, secondaryDistance, poleRaw, axisScores, config }) {
+function calculateConfidence({ primaryDistance, secondaryDistance, poleRaw, axisScores, config }: any) {
   const confidenceConfig = config.confidence;
   const distanceConfidence = 1 - Math.min(primaryDistance / confidenceConfig.distance_divisor, 1);
   const gap = secondaryDistance - primaryDistance;
@@ -164,8 +180,8 @@ function calculateConfidence({ primaryDistance, secondaryDistance, poleRaw, axis
     confidenceConfig.weights.consistency * consistencyConfidence;
 
   const axisStrength =
-    Object.values(axisScores).reduce((sum, value) => sum + Math.abs(value), 0) /
-    Object.values(axisScores).length;
+    Object.values(axisScores as Record<string, number>).reduce((sum, value) => sum + Math.abs(value), 0) /
+    Object.values(axisScores as Record<string, number>).length;
   const flatness = confidenceConfig.axis_flatness_penalty;
   if (axisStrength < flatness.axis_strength_lt) {
     score *= flatness.multiplier;
@@ -193,7 +209,7 @@ function calculateConfidence({ primaryDistance, secondaryDistance, poleRaw, axis
   };
 }
 
-function calculateDerivedScores(poleScores) {
+export function calculateDerivedScores(poleScores: Record<string, number>) {
   const growth = poleScores.growth;
   const escape = poleScores.escape;
   const broad = poleScores.broad;
@@ -216,7 +232,7 @@ function calculateDerivedScores(poleScores) {
   };
 }
 
-function selectShareHighlights(primaryType, derivedScores, config, scoreLabels = DEFAULT_SCORE_LABELS) {
+export function selectShareHighlights(primaryType: string, derivedScores: Record<string, number>, config: any, scoreLabels = DEFAULT_SCORE_LABELS) {
   const entries = Object.entries(derivedScores).map(([key, value]) => ({ key, value }));
   const priority = [
     'book_hoarding_risk',
@@ -235,7 +251,7 @@ function selectShareHighlights(primaryType, derivedScores, config, scoreLabels =
     if (bestForced) selected = selected.slice(0, 2).concat(bestForced);
   }
 
-  const seen = new Set();
+  const seen = new Set<string>();
   selected = selected
     .filter((item) => {
       if (seen.has(item.key)) return false;
@@ -252,7 +268,7 @@ function selectShareHighlights(primaryType, derivedScores, config, scoreLabels =
   }));
 }
 
-function scoreQuiz({ answers, questionsData, scoringConfig, questionVersion }) {
+export function scoreQuiz({ answers, questionsData, scoringConfig, questionVersion }: any) {
   const questions = questionsData.questions || questionsData;
   const expectedQuestionVersion = scoringConfig.question_version || questionsData.question_version;
   validateAnswers(answers, questions, expectedQuestionVersion, questionVersion);
@@ -288,13 +304,3 @@ function scoreQuiz({ answers, questionsData, scoringConfig, questionVersion }) {
     share_highlights: shareHighlights,
   };
 }
-
-module.exports = {
-  scoreQuiz,
-  validateAnswers,
-  calculatePoleScores,
-  calculateAxisScores,
-  calculateDerivedScores,
-  selectShareHighlights,
-  weightedDistance,
-};

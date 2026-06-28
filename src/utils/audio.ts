@@ -156,3 +156,163 @@ export const playScribbleSound = () => {
     }
   } catch (e) {}
 };
+
+export const playTypewriterSound = () => {
+  try {
+    const ctx = getAudioCtx();
+    if (!ctx) return;
+    
+    const play = () => {
+      try {
+        const osc = ctx.createOscillator();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(1200 + Math.random() * 600, ctx.currentTime); 
+        
+        const gain = ctx.createGain();
+        gain.gain.setValueAtTime(0.03, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.04);
+        
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        
+        osc.start();
+        osc.stop(ctx.currentTime + 0.05);
+      } catch (err) {}
+    };
+
+    if (ctx.state === 'suspended') {
+      ctx.resume().then(play).catch(() => {});
+    } else {
+      play();
+    }
+  } catch (e) {}
+};
+
+export const playRocketSound = () => {
+  try {
+    const ctx = getAudioCtx();
+    if (!ctx) return;
+    
+    const play = () => {
+      try {
+        const osc = ctx.createOscillator();
+        osc.type = 'sawtooth'; 
+        
+        osc.frequency.setValueAtTime(1200, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.8);
+        
+        const gain = ctx.createGain();
+        gain.gain.setValueAtTime(0.05, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.0);
+        
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        
+        osc.start();
+        osc.stop(ctx.currentTime + 1.0);
+      } catch (err) {}
+    };
+
+    if (ctx.state === 'suspended') {
+      ctx.resume().then(play).catch(() => {});
+    } else {
+      play();
+    }
+  } catch (e) {}
+};
+
+export const playClickSound = (pitchIndex = 0, isHover = false) => {
+  try {
+    const ctx = getAudioCtx();
+    if (!ctx) return;
+    
+    const play = () => {
+      try {
+        if (isHover) {
+          const scale = [329.63, 392.00, 440.00, 523.25, 587.33]; 
+          const freq = pitchIndex === -1 ? 164.81 : (scale[pitchIndex % scale.length] || 440);
+          
+          const osc = ctx.createOscillator();
+          osc.type = 'square';
+          
+          osc.frequency.setValueAtTime(freq, ctx.currentTime);
+          osc.frequency.setValueAtTime(freq * 2, ctx.currentTime + 0.04);
+          
+          const hoverGain = ctx.createGain();
+          hoverGain.gain.setValueAtTime(0.02, ctx.currentTime);
+          hoverGain.gain.setValueAtTime(0.02, ctx.currentTime + 0.04);
+          hoverGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
+          
+          osc.connect(hoverGain);
+          hoverGain.connect(ctx.destination);
+          osc.start();
+          osc.stop(ctx.currentTime + 0.08);
+          return;
+        }
+
+        const baseFreqs = [82.41, 98.00, 110.00, 130.81, 146.83];
+        const root = pitchIndex === -1 ? 41.20 : (baseFreqs[pitchIndex % baseFreqs.length] || 82.41);
+        const multiplier = 1;
+        const freqs = [root * multiplier, root * 1.498 * multiplier, root * 2 * multiplier];
+        
+        const masterGain = ctx.createGain();
+        masterGain.gain.value = 0.3;
+        
+        const waveShaper = ctx.createWaveShaper();
+        const curve = new Float32Array(44100);
+        const amount = 50; 
+        for (let i = 0; i < 44100; ++i) {
+          let x = i * 2 / 44100 - 1;
+          curve[i] = (3 + amount) * x * 20 * (Math.PI / 180) / (Math.PI + amount * Math.abs(x));
+        }
+        waveShaper.curve = curve;
+        
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.setValueAtTime(800, ctx.currentTime);
+        filter.Q.value = 1.0;
+        
+        const envGain = ctx.createGain();
+        envGain.gain.setValueAtTime(1, ctx.currentTime);
+        envGain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
+        
+        envGain.connect(waveShaper);
+        waveShaper.connect(filter);
+        filter.connect(masterGain);
+        masterGain.connect(ctx.destination);
+        
+        freqs.forEach(f => {
+          const osc = ctx.createOscillator();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(f, ctx.currentTime);
+          osc.detune.value = (Math.random() - 0.5) * 15;
+          osc.connect(envGain);
+          osc.start();
+          osc.stop(ctx.currentTime + 0.25);
+        });
+        
+        const bufferSize = ctx.sampleRate * 0.05;  
+        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+          data[i] = Math.random() * 2 - 1;
+        }
+        const noise = ctx.createBufferSource();
+        noise.buffer = buffer;
+        const noiseGain = ctx.createGain();
+        noiseGain.gain.setValueAtTime(0.8, ctx.currentTime);
+        noiseGain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.05);
+        noise.connect(noiseGain);
+        noiseGain.connect(waveShaper); 
+        noise.start();
+        
+      } catch (err) {}
+    };
+
+    if (ctx.state === 'suspended') {
+      ctx.resume().then(play).catch(() => {});
+    } else {
+      play();
+    }
+  } catch (e) {}
+};
